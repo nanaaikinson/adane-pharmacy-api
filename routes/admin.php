@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\Admin\AuthController;
 use App\Http\Controllers\API\Admin\CategoryController;
 use App\Http\Controllers\API\Admin\ManufacturerController;
 use App\Http\Controllers\API\Admin\ProductController;
@@ -24,6 +25,10 @@ use Illuminate\Support\Facades\Route;
 //});
 
 Route::middleware('json.response')->group(function() {
+  Route::prefix("auth")->group(function() {
+    Route::post("/login", [AuthController::class, "login"]);
+  });
+
   Route::apiResource("suppliers", SupplierController::class);
   Route::apiResource("categories", CategoryController::class);
   Route::apiResource("manufacturers", ManufacturerController::class);
