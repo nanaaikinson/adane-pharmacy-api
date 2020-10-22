@@ -7,11 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use OwenIt\Auditing\Contracts\Auditable;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Product extends Model implements Auditable
+class Product extends Model implements Auditable, HasMedia
 {
   use HasFactory;
   use \OwenIt\Auditing\Auditable;
+  use InteractsWithMedia;
 
   protected $guarded = [];
 
@@ -33,6 +36,16 @@ class Product extends Model implements Auditable
   public function supplier(): BelongsTo
   {
     return $this->belongsTo(Supplier::class);
+  }
+
+  /**
+   * Product belongs to a shelf
+   *
+   * @return BelongsTo
+   */
+  public function shelf(): BelongsTo
+  {
+    return $this->belongsTo(Shelf::class);
   }
 
   /**

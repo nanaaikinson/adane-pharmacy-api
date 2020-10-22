@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\API\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSupplierRequest;
@@ -41,7 +41,7 @@ class SupplierController extends Controller
         "email" => $request->input("email") ?: NULL,
         "primary_telephone" => $request->input("primary_telephone") ?: NULL,
         "secondary_telephone" => $request->input("primary_telephone") ?: NULL,
-        "info" => $request->input("info") ?: NULL,
+        "description" => $request->input("description") ?: NULL,
       ]);
       if ($request->hasFile('image')) {
         $supplier->addMediaFromRequest('image')->toMediaCollection('images');
@@ -74,7 +74,7 @@ class SupplierController extends Controller
         "email" => $request->input("email") ?: NULL,
         "primary_telephone" => $request->input("primary_telephone") ?: NULL,
         "secondary_telephone" => $request->input("primary_telephone") ?: NULL,
-        "info" => $request->input("info") ?: NULL,
+        "description" => $request->input("description") ?: NULL,
       ]);
       $message = "Supplier updated successfully.";
       return $this->successDataResponse($supplier, $message);

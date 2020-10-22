@@ -15,9 +15,10 @@ class CreateProductsTable extends Migration
   {
     Schema::create('products', function (Blueprint $table) {
       $table->id();
-      $table->string('genetic_name')->nullable();
+      $table->string('generic_name')->nullable();
       $table->string('brand_name')->nullable();
       //$table->unsignedBigInteger('category_id')->nullable();
+      $table->unsignedBigInteger('shelf_id')->nullable();
       $table->unsignedBigInteger('supplier_id')->nullable();
       $table->unsignedBigInteger('manufacturer_id')->nullable();
       $table->integer('quantity')->nullable();
@@ -30,6 +31,8 @@ class CreateProductsTable extends Migration
       $table->string('product_number')->nullable();
       $table->date('purchased_date')->nullable();
       $table->date('expiry_date')->nullable();
+      $table->string('mask')->unique()->nullable();
+      $table->double('discount')->nullable()->default(0);
       $table->timestamps();
       $table->softDeletes();
 
@@ -38,6 +41,9 @@ class CreateProductsTable extends Migration
 
       $table->foreign('supplier_id')->references('id')
         ->on('suppliers')->nullOnDelete();
+
+      $table->foreign('shelf_id')->references('id')
+        ->on('shelves')->nullOnDelete();
     });
   }
 

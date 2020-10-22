@@ -1,8 +1,10 @@
 <?php
 
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\ManufacturerController;
-use App\Http\Controllers\Admin\SupplierController;
+use App\Http\Controllers\API\Admin\CategoryController;
+use App\Http\Controllers\API\Admin\ManufacturerController;
+use App\Http\Controllers\API\Admin\ProductController;
+use App\Http\Controllers\API\Admin\ShelfController;
+use App\Http\Controllers\API\Admin\SupplierController;
 use Illuminate\Support\Facades\Route;
 
 //Route::prefix('suppliers')->group(function() {
@@ -25,4 +27,6 @@ Route::middleware('json.response')->group(function() {
   Route::apiResource("suppliers", SupplierController::class);
   Route::apiResource("categories", CategoryController::class);
   Route::apiResource("manufacturers", ManufacturerController::class);
+  Route::apiResource("products", ProductController::class);
+  Route::apiResource("shelves", ShelfController::class);
 });

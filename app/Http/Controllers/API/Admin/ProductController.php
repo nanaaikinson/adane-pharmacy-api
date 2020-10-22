@@ -1,0 +1,136 @@
+<?php
+
+namespace App\Http\Controllers\API\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreProductRequest;
+use App\Models\Product;
+use App\Traits\ResponseTrait;
+use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+
+class ProductController extends Controller
+{
+  use ResponseTrait;
+
+  /**
+   * Display a listing of the resource.
+   *
+   * @param Request $request
+   * @return JsonResponse
+   */
+  public function index(Request $request): JsonResponse
+  {
+    try {
+      $products = Product::
+      with("manufacturer")
+        ->with("supplier")
+        ->with("shelf")
+        ->with("categories")
+        ->get();
+
+      return $this->dataResponse($products);
+    } catch (Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
+  }
+
+  /**
+   * Store a resource
+   *
+   * @param StoreProductRequest $request
+   * @return JsonResponse
+   */
+  public function store(StoreProductRequest $request): JsonResponse
+  {
+    try {
+      DB::beginTransaction();
+      $validated = (object)$request->validationData();
+      $product = Product::create([
+        "brand_name" => $validated->brand_name,
+        "generic_name" => $validated->generic_name,
+        "purchased_date" => $validated->purchased_date,
+        "expiry_date" => $validated->expiry_date,
+        "quantity" => $validated->quantity,
+        "reorder_level" => $validated->reorder_level,
+        "selling_price" => $validated->selling_price,
+        "cost_price" => $validated->cost_price,
+        "shelf_id" => $validated->shelf,
+        "supplier_id" => $validated->supplier,
+        "manufacturer_id" => $validated->manufacturer,
+        "description" => $validated->description ?: NULL,
+        "side_effects" => $validated->side_effects ?: NULL,
+        "barcode" => $validated->barcode ?: NULL,
+        "product_number" => $validated->product_number ?: NULL,
+        "discount" => $validated->discount ?: NULL,
+        "slug" => Str::slug($validated->generic_name)
+      ]);
+
+      if ($product) {
+        // Attach categories to product
+        $product->categories()->attach($validated->categories);
+
+        if ($request->hasFile("images")) {
+          $product->addMultipleMediaFromRequest($request->file("images"))
+            ->each(function ($file) {
+              $file->toMediaCollection("images");
+            });
+        }
+        DB::commit();
+        return $this->successResponse("Product saved successfully");
+      }
+      DB::rollBack();
+      return $this->errorResponse("An error occurred while saving this product");
+    } catch (Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
+  }
+
+  /**
+   * Display the specified resource.
+   *
+   * @param $mask
+   * @return JsonResponse
+   */
+  public function show($mask): JsonResponse
+  {
+    try {
+      $product = Product::with("manufacturer")
+        ->with("supplier")
+        ->with("shelf")
+        ->with("categories")
+        ->where("mask", $mask)
+        ->firstOrFail();
+
+      dd($product);
+    } catch (Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
+  }
+
+  /**
+   * Update the specified resource in storage.
+   *
+   * @param \Illuminate\Http\Request $request
+   * @param int $id
+   * @return \Illuminate\Http\Response
+   */
+  public function update(Request $request, $id)
+  {
+    //
+  }
+
+  /**
+   * Remove the specified resource from storage.
+   *
+   * @param int $id
+   * @return \Illuminate\Http\Response
+   */
+  public function destroy($id)
+  {
+    //
+  }
+}

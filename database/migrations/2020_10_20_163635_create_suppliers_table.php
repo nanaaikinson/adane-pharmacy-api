@@ -19,9 +19,10 @@ class CreateSuppliersTable extends Migration
       $table->string('primary_telephone')->nullable();
       $table->string('secondary_telephone')->nullable();
       $table->string('email')->nullable();
-      $table->text('info')->nullable();
+      $table->text('description')->nullable();
       $table->string('mask')->nullable()->unique();
       $table->timestamps();
+      $table->softDeletes();
     });
   }
 
