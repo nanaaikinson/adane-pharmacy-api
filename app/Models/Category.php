@@ -24,4 +24,9 @@ class Category extends Model implements Auditable
     return $this->belongsToMany(Category::class, "product_category", "category_id", "product_id")
       ->withTimestamps();
   }
+
+  public static function index()
+  {
+    return self::orderBy("id", "DESC")->get();
+  }
 }

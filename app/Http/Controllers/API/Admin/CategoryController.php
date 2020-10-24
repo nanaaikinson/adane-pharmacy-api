@@ -18,7 +18,7 @@ class CategoryController extends Controller
   public function index(Request $request): JsonResponse
   {
     try {
-      $categories = Category::all();
+      $categories = Category::index();
       return $this->dataResponse($categories);
     } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
@@ -57,7 +57,7 @@ class CategoryController extends Controller
     try {
       $category = Category::where("mask", $mask)->firstOrFail();
       $validated = (object)$request->validationData();
-      $category = $category->update([
+      $category->update([
         "name" => $validated->name,
         "description" => $request->input("description") ?: NULL,
       ]);

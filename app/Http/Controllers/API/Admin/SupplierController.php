@@ -18,15 +18,7 @@ class SupplierController extends Controller
   public function index(Request $request): JsonResponse
   {
     try {
-//      $suppliers = Supplier::all()->map(function($supplier) {
-//        return [
-//          "image" => $supplier->getMedia('images')->first() ? $supplier->getMedia('images')->first()->getFullUrl() : NULL
-//        ];
-//      });
-
-
-
-      return $this->dataResponse(Supplier::all());
+      return $this->dataResponse(Supplier::orderBy("id", "DESC")->get());
     } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
     }
@@ -40,13 +32,13 @@ class SupplierController extends Controller
         "name" => $validated->name,
         "email" => $request->input("email") ?: NULL,
         "primary_telephone" => $request->input("primary_telephone") ?: NULL,
-        "secondary_telephone" => $request->input("primary_telephone") ?: NULL,
+        "secondary_telephone" => $request->input("secondary_telephone") ?: NULL,
         "description" => $request->input("description") ?: NULL,
       ]);
       if ($request->hasFile('image')) {
         $supplier->addMediaFromRequest('image')->toMediaCollection('images');
       }
-      return $this->dataResponse($supplier);
+      return $this->successDataResponse($supplier, "Supplier created successfully.");
     } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
     }
