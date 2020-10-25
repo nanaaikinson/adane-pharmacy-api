@@ -61,11 +61,11 @@ class SupplierController extends Controller
     try {
       $supplier = Supplier::where("mask", $mask)->firstOrFail();
       $validated = (object)$request->validationData();
-      $supplier = $supplier->update([
+      $supplier->update([
         "name" => $validated->name,
         "email" => $request->input("email") ?: NULL,
         "primary_telephone" => $request->input("primary_telephone") ?: NULL,
-        "secondary_telephone" => $request->input("primary_telephone") ?: NULL,
+        "secondary_telephone" => $request->input("secondary_telephone") ?: NULL,
         "description" => $request->input("description") ?: NULL,
       ]);
       $message = "Supplier updated successfully.";

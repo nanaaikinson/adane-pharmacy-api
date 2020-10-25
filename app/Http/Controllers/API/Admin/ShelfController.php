@@ -22,7 +22,7 @@ class ShelfController extends Controller
    */
   public function index():JsonResponse
   {
-    return $this->dataResponse(Shelf::all());
+    return $this->dataResponse(Shelf::orderBy("id", "DESC")->get());
   }
 
   /**
