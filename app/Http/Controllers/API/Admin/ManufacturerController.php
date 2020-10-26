@@ -18,7 +18,7 @@ class ManufacturerController extends Controller
   public function index(Request $request): JsonResponse
   {
     try {
-      $manufacturers = Manufacturer::all();
+      $manufacturers = Manufacturer::orderBy("id", "DESC")->get();
       return $this->dataResponse($manufacturers);
     } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
@@ -57,7 +57,7 @@ class ManufacturerController extends Controller
     try {
       $Manufacturer = Manufacturer::where("mask", $mask)->firstOrFail();
       $validated = (object)$request->validationData();
-      $Manufacturer = $Manufacturer->update([
+      $Manufacturer->update([
         "name" => $validated->name,
         "description" => $request->input("description") ?: NULL,
       ]);
