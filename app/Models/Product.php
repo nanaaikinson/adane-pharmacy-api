@@ -23,9 +23,9 @@ class Product extends Model implements Auditable, HasMedia
    *
    * @return BelongsTo
    */
-  public function manufacturer(): BelongsTo
+  public function brand(): BelongsTo
   {
-    return $this->belongsTo(Manufacturer::class);
+    return $this->belongsTo(Brand::class);
   }
 
   /**

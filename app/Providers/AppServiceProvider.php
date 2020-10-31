@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Category;
-use App\Models\Manufacturer;
+use App\Models\Brand;
 use App\Models\Product;
 use App\Models\Shelf;
 use App\Models\Supplier;
@@ -36,7 +36,7 @@ class AppServiceProvider extends ServiceProvider
     // Model Observers
     Supplier::observe(SupplierObserver::class);
     Category::observe(CategoryObserver::class);
-    Manufacturer::observe(ManufacturerObserver::class);
+    Brand::observe(ManufacturerObserver::class);
     Product::observe(ProductObserver::class);
     Shelf::observe(ShelfObserver::class);
   }

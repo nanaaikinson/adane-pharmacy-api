@@ -2,39 +2,44 @@
 
 namespace App\Http\Controllers\API\Admin;
 
+use App\Events\BrandsRealtimeEvent;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreManufacturerRequest;
-use App\Models\Manufacturer;
+use App\Http\Requests\StoreBrandRequest;
+use App\Models\Brand;
 use App\Traits\ResponseTrait;
+use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Exception;
 
-class ManufacturerController extends Controller
+class BrandController extends Controller
 {
   use ResponseTrait;
 
   public function index(Request $request): JsonResponse
   {
     try {
-      $manufacturers = Manufacturer::orderBy("id", "DESC")->get();
-      return $this->dataResponse($manufacturers);
+      $brands = Brand::orderBy("id", "DESC")->get();
+      return $this->dataResponse($brands);
     } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
     }
   }
 
-  public function store(StoreManufacturerRequest $request): JsonResponse
+  public function store(StoreBrandRequest $request): JsonResponse
   {
     try {
       $validated = (object)$request->validationData();
-      $Manufacturer = Manufacturer::create([
+      $brand = Brand::create([
         "name" => $validated->name,
         "description" => $request->input("description") ?: NULL,
       ]);
-      $message = "Manufacturer created successfully";
-      return $this->successDataResponse($Manufacturer, $message);
+
+      // Emit realtime event
+      // event(new BrandsRealtimeEvent($brand, env("WS_CHANNEL"), env("EVENT_BRAND"), "store"));
+
+      $message = "Brand created successfully";
+      return $this->successDataResponse($brand, $message);
     } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
     }
@@ -43,8 +48,8 @@ class ManufacturerController extends Controller
   public function show(string $mask): JsonResponse
   {
     try {
-      $Manufacturer = Manufacturer::where("mask", $mask)->firstOrFail();
-      return $this->dataResponse($Manufacturer);
+      $brand = Brand::where("mask", $mask)->firstOrFail();
+      return $this->dataResponse($brand);
     } catch (ModelNotFoundException $e) {
       return $this->notFoundResponse();
     } catch (Exception $e) {
@@ -52,17 +57,17 @@ class ManufacturerController extends Controller
     }
   }
 
-  public function update(StoreManufacturerRequest $request, string $mask): JsonResponse
+  public function update(StoreBrandRequest $request, string $mask): JsonResponse
   {
     try {
-      $Manufacturer = Manufacturer::where("mask", $mask)->firstOrFail();
+      $brand = Brand::where("mask", $mask)->firstOrFail();
       $validated = (object)$request->validationData();
-      $Manufacturer->update([
+      $brand->update([
         "name" => $validated->name,
         "description" => $request->input("description") ?: NULL,
       ]);
-      $message = "Manufacturer updated successfully";
-      return $this->successDataResponse($Manufacturer, $message);
+      $message = "Brand updated successfully";
+      return $this->successDataResponse($brand, $message);
     } catch (ModelNotFoundException $e) {
       return $this->notFoundResponse();
     } catch (Exception $e) {

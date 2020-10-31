@@ -7,6 +7,7 @@ use App\Http\Requests\StoreProductRequest;
 use App\Models\Product;
 use App\Traits\ResponseTrait;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,8 +26,7 @@ class ProductController extends Controller
   public function index(Request $request): JsonResponse
   {
     try {
-      $products = Product::
-      with("manufacturer")
+      $products = Product::with("manufacturer")
         ->with("supplier")
         ->with("shelf")
         ->with("categories")
@@ -54,13 +54,13 @@ class ProductController extends Controller
         "generic_name" => $validated->generic_name,
         "purchased_date" => $validated->purchased_date,
         "expiry_date" => $validated->expiry_date,
-        "quantity" => $validated->quantity,
+        //"quantity" => $validated->quantity,
         "reorder_level" => $validated->reorder_level,
         "selling_price" => $validated->selling_price,
         "cost_price" => $validated->cost_price,
         "shelf_id" => $validated->shelf,
-        "supplier_id" => $validated->supplier,
-        "manufacturer_id" => $validated->manufacturer,
+        //"supplier_id" => $validated->supplier,
+        //"manufacturer_id" => $validated->manufacturer,
         "description" => $validated->description ?: NULL,
         "side_effects" => $validated->side_effects ?: NULL,
         "barcode" => $validated->barcode ?: NULL,
@@ -80,7 +80,8 @@ class ProductController extends Controller
             });
         }
         DB::commit();
-        return $this->successResponse("Product saved successfully");
+        // TODO: Fire event for websocket
+        return $this->successDataResponse($product, "Product saved successfully");
       }
       DB::rollBack();
       return $this->errorResponse("An error occurred while saving this product");
@@ -114,22 +115,71 @@ class ProductController extends Controller
   /**
    * Update the specified resource in storage.
    *
-   * @param \Illuminate\Http\Request $request
-   * @param int $id
-   * @return \Illuminate\Http\Response
+   * @param StoreProductRequest $request
+   * @param string $mask
+   * @return JsonResponse
    */
-  public function update(Request $request, $id)
+  public function update(StoreProductRequest $request, string $mask): JsonResponse
   {
-    //
+    try {
+      $product = Product::where("mask", $mask)->firstOrFail();
+      $media = $product->getMedia();
+      $validated = (object)$request->validationData();
+      DB::beginTransaction();
+
+      $updated = $product->update([
+        "brand_name" => $validated->brand_name,
+        "generic_name" => $validated->generic_name,
+        "purchased_date" => $validated->purchased_date,
+        "expiry_date" => $validated->expiry_date,
+        //"quantity" => $validated->quantity,
+        "reorder_level" => $validated->reorder_level,
+        "selling_price" => $validated->selling_price,
+        "cost_price" => $validated->cost_price,
+        "shelf_id" => $validated->shelf,
+        //"supplier_id" => $validated->supplier,
+        //"manufacturer_id" => $validated->manufacturer,
+        "description" => $validated->description ?: NULL,
+        "side_effects" => $validated->side_effects ?: NULL,
+        "barcode" => $validated->barcode ?: NULL,
+        "product_number" => $validated->product_number ?: NULL,
+        "discount" => $validated->discount ?: NULL,
+        "slug" => Str::slug($validated->generic_name)
+      ]);
+
+      if ($updated) {
+        // Sync categories to product
+        $product->categories()->sync($validated->categories);
+
+        // Upload files of any
+        if ($request->hasFile("images")) {
+          $uploaded = $product->addMultipleMediaFromRequest($request->file("images"))
+            ->each(function ($file) {
+              $file->toMediaCollection("images");
+            });
+          dd($uploaded);
+        }
+
+        // TODO: Fire event for websocket
+      }
+      DB::rollBack();
+      return $this->errorResponse("An error occurred while updating this product");
+    }
+    catch (ModelNotFoundException $e) {
+      return $this->notFoundResponse();
+    }
+    catch (Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
   }
 
   /**
    * Remove the specified resource from storage.
    *
-   * @param int $id
-   * @return \Illuminate\Http\Response
+   * @param string $mask
+   * @return JsonResponse
    */
-  public function destroy($id)
+  public function destroy(string $mask): JsonResponse
   {
     //
   }

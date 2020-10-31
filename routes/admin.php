@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\API\Admin\AuthController;
 use App\Http\Controllers\API\Admin\CategoryController;
-use App\Http\Controllers\API\Admin\ManufacturerController;
+use App\Http\Controllers\API\Admin\BrandController;
 use App\Http\Controllers\API\Admin\ProductController;
 use App\Http\Controllers\API\Admin\ShelfController;
 use App\Http\Controllers\API\Admin\SupplierController;
@@ -31,7 +31,7 @@ Route::middleware('json.response')->group(function() {
 
   Route::apiResource("suppliers", SupplierController::class);
   Route::apiResource("categories", CategoryController::class);
-  Route::apiResource("manufacturers", ManufacturerController::class);
+  Route::apiResource("brands", BrandController::class);
   Route::apiResource("products", ProductController::class);
   Route::apiResource("shelves", ShelfController::class);
 });

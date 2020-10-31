@@ -3,62 +3,62 @@
 namespace App\Observers;
 
 use App\Functions\Mask;
-use App\Models\Manufacturer;
+use App\Models\Brand;
 
 class ManufacturerObserver
 {
     /**
-     * Handle the Manufacturer "created" event.
+     * Handle the Brand "created" event.
      *
-     * @param  \App\Models\Manufacturer  $Manufacturer
+     * @param  \App\Models\Brand  $Manufacturer
      * @return void
      */
-    public function created(Manufacturer $Manufacturer)
+    public function created(Brand $Manufacturer)
     {
       $Manufacturer->mask = Mask::string($Manufacturer->id);
       $Manufacturer->save();
     }
 
     /**
-     * Handle the Manufacturer "updated" event.
+     * Handle the Brand "updated" event.
      *
-     * @param  \App\Models\Manufacturer  $Manufacturer
+     * @param  \App\Models\Brand  $Manufacturer
      * @return void
      */
-    public function updated(Manufacturer $Manufacturer)
+    public function updated(Brand $Manufacturer)
     {
         //
     }
 
     /**
-     * Handle the Manufacturer "deleted" event.
+     * Handle the Brand "deleted" event.
      *
-     * @param  \App\Models\Manufacturer  $Manufacturer
+     * @param  \App\Models\Brand  $Manufacturer
      * @return void
      */
-    public function deleted(Manufacturer $Manufacturer)
+    public function deleted(Brand $Manufacturer)
     {
         //
     }
 
     /**
-     * Handle the Manufacturer "restored" event.
+     * Handle the Brand "restored" event.
      *
-     * @param  \App\Models\Manufacturer  $Manufacturer
+     * @param  \App\Models\Brand  $Manufacturer
      * @return void
      */
-    public function restored(Manufacturer $Manufacturer)
+    public function restored(Brand $Manufacturer)
     {
         //
     }
 
     /**
-     * Handle the Manufacturer "force deleted" event.
+     * Handle the Brand "force deleted" event.
      *
-     * @param  \App\Models\Manufacturer  $Manufacturer
+     * @param  \App\Models\Brand  $Manufacturer
      * @return void
      */
-    public function forceDeleted(Manufacturer $Manufacturer)
+    public function forceDeleted(Brand $Manufacturer)
     {
         //
     }

@@ -20,8 +20,8 @@ class CreateProductsTable extends Migration
       //$table->unsignedBigInteger('category_id')->nullable();
       $table->unsignedBigInteger('shelf_id')->nullable();
       $table->unsignedBigInteger('supplier_id')->nullable();
-      $table->unsignedBigInteger('manufacturer_id')->nullable();
-      $table->integer('quantity')->nullable();
+      $table->unsignedBigInteger('brand_id')->nullable();
+      $table->integer('quantity')->nullable()->default(0);
       $table->integer('reorder_level')->nullable();
       $table->double('selling_price')->nullable();
       $table->double('cost_price')->nullable();
@@ -36,8 +36,8 @@ class CreateProductsTable extends Migration
       $table->timestamps();
       $table->softDeletes();
 
-      $table->foreign('manufacturer_id')->references('id')
-        ->on('manufacturers')->nullOnDelete();
+      $table->foreign('brand_id')->references('id')
+        ->on('brands')->nullOnDelete();
 
       $table->foreign('supplier_id')->references('id')
         ->on('suppliers')->nullOnDelete();
