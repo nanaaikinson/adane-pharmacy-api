@@ -26,7 +26,7 @@ class ProductController extends Controller
   public function index(Request $request): JsonResponse
   {
     try {
-      $products = Product::with("manufacturer")
+      $products = Product::with("brand")
         ->with("supplier")
         ->with("shelf")
         ->with("categories")
@@ -44,7 +44,7 @@ class ProductController extends Controller
    * @param StoreProductRequest $request
    * @return JsonResponse
    */
-  public function store(StoreProductRequest $request): JsonResponse
+  public function store(StoreProductRequest $request)
   {
     try {
       DB::beginTransaction();
@@ -52,20 +52,21 @@ class ProductController extends Controller
       $product = Product::create([
         "brand_name" => $validated->brand_name,
         "generic_name" => $validated->generic_name,
-        "purchased_date" => $validated->purchased_date,
-        "expiry_date" => $validated->expiry_date,
+        "purchased_date" => $request->purchased_date ?: NULL,
+        "expiry_date" => $request->expiry_date ?: NULL,
         //"quantity" => $validated->quantity,
         "reorder_level" => $validated->reorder_level,
         "selling_price" => $validated->selling_price,
         "cost_price" => $validated->cost_price,
         "shelf_id" => $validated->shelf,
-        //"supplier_id" => $validated->supplier,
-        //"manufacturer_id" => $validated->manufacturer,
+        //"supplier_id" => $validated->supplier ?: NULL,
+        "brand_id" => $validated->brand ?: NULL,
+        "product_type_id" => $validated->product_type ?: NULL,
         "description" => $validated->description ?: NULL,
         "side_effects" => $validated->side_effects ?: NULL,
         "barcode" => $validated->barcode ?: NULL,
         "product_number" => $validated->product_number ?: NULL,
-        "discount" => $validated->discount ?: NULL,
+        "discount" => $request->discount ?: NULL,
         "slug" => Str::slug($validated->generic_name)
       ]);
 
@@ -81,6 +82,7 @@ class ProductController extends Controller
         }
         DB::commit();
         // TODO: Fire event for websocket
+        $product = $product->with("categories")->first();
         return $this->successDataResponse($product, "Product saved successfully");
       }
       DB::rollBack();

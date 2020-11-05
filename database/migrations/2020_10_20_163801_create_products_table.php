@@ -18,6 +18,7 @@ class CreateProductsTable extends Migration
       $table->string('generic_name')->nullable();
       $table->string('brand_name')->nullable();
       //$table->unsignedBigInteger('category_id')->nullable();
+      $table->unsignedBigInteger('product_type_id')->nullable();
       $table->unsignedBigInteger('shelf_id')->nullable();
       $table->unsignedBigInteger('supplier_id')->nullable();
       $table->unsignedBigInteger('brand_id')->nullable();
@@ -44,6 +45,9 @@ class CreateProductsTable extends Migration
 
       $table->foreign('shelf_id')->references('id')
         ->on('shelves')->nullOnDelete();
+
+      $table->foreign('product_type_id')->references('id')
+        ->on('product_types')->nullOnDelete();
     });
   }
 

@@ -33,7 +33,8 @@ class SupplierController extends Controller
         "email" => $request->input("email") ?: NULL,
         "primary_telephone" => $request->input("primary_telephone") ?: NULL,
         "secondary_telephone" => $request->input("secondary_telephone") ?: NULL,
-        "description" => $request->input("description") ?: NULL,
+        "details" => $request->input("details") ?: NULL,
+        "address" => $request->input("address") ?: NULL,
       ]);
       if ($request->hasFile('image')) {
         $supplier->addMediaFromRequest('image')->toMediaCollection('images');
@@ -66,7 +67,8 @@ class SupplierController extends Controller
         "email" => $request->input("email") ?: NULL,
         "primary_telephone" => $request->input("primary_telephone") ?: NULL,
         "secondary_telephone" => $request->input("secondary_telephone") ?: NULL,
-        "description" => $request->input("description") ?: NULL,
+        "details" => $request->input("details") ?: NULL,
+        "address" => $request->input("address") ?: NULL,
       ]);
       $message = "Supplier updated successfully.";
       return $this->successDataResponse($supplier, $message);

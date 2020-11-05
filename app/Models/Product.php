@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use OwenIt\Auditing\Contracts\Auditable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -49,6 +50,16 @@ class Product extends Model implements Auditable, HasMedia
   }
 
   /**
+   * Product belongs to a type
+   *
+   * @return BelongsTo
+   */
+  public function type(): BelongsTo
+  {
+    return $this->belongsTo(ProductType::class);
+  }
+
+  /**
    * Product belongs to several categories
    *
    * @return BelongsToMany
@@ -57,5 +68,10 @@ class Product extends Model implements Auditable, HasMedia
   {
     return $this->belongsToMany(Category::class, "product_category", "product_id", "category_id")
       ->withTimestamps();
+  }
+
+  public function productCategory(): HasMany
+  {
+    return $this->hasMany(ProductCategory::class);
   }
 }
