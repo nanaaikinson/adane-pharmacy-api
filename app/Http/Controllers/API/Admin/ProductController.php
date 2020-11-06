@@ -30,7 +30,7 @@ class ProductController extends Controller
         ->with("supplier")
         ->with("shelf")
         ->with("categories")
-        ->get();
+        ->orderBy("id", "DESC")->get();
 
       return $this->dataResponse($products);
     } catch (Exception $e) {
@@ -101,14 +101,16 @@ class ProductController extends Controller
   public function show($mask): JsonResponse
   {
     try {
-      $product = Product::with("manufacturer")
+      $product = Product::with("brand")
         ->with("supplier")
         ->with("shelf")
         ->with("categories")
         ->where("mask", $mask)
         ->firstOrFail();
 
-      dd($product);
+//      $product = Product::with("productCategory")->where("mask", $mask)->firstOrFail();
+
+      return $this->dataResponse($product);
     } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
     }
