@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Category;
-use App\Models\Brand;
+use App\Models\Manufacturer;
 use App\Models\Product;
 use App\Models\ProductType;
 use App\Models\Shelf;
@@ -14,7 +14,9 @@ use App\Observers\ProductObserver;
 use App\Observers\ProductTypeObserver;
 use App\Observers\ShelfObserver;
 use App\Observers\SupplierObserver;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
+use Intervention\Image\ImageManagerStatic;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -38,9 +40,19 @@ class AppServiceProvider extends ServiceProvider
     // Model Observers
     Supplier::observe(SupplierObserver::class);
     Category::observe(CategoryObserver::class);
-    Brand::observe(ManufacturerObserver::class);
+    Manufacturer::observe(ManufacturerObserver::class);
     Product::observe(ProductObserver::class);
     Shelf::observe(ShelfObserver::class);
     ProductType::observe(ProductTypeObserver::class);
+
+    // Validation
+    Validator::extend('is_image', function ($attribute, $value, $params, $validator) {
+      try {
+        ImageManagerStatic::make($value);
+        return true;
+      } catch (\Exception $e) {
+        return false;
+      }
+    });
   }
 }

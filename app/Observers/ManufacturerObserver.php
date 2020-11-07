@@ -3,17 +3,17 @@
 namespace App\Observers;
 
 use App\Functions\Mask;
-use App\Models\Brand;
+use App\Models\Manufacturer;
 
 class ManufacturerObserver
 {
     /**
      * Handle the Brand "created" event.
      *
-     * @param  \App\Models\Brand  $Manufacturer
+     * @param  \App\Models\Manufacturer  $Manufacturer
      * @return void
      */
-    public function created(Brand $Manufacturer)
+    public function created(Manufacturer $Manufacturer)
     {
       $Manufacturer->mask = Mask::string($Manufacturer->id);
       $Manufacturer->save();
@@ -22,10 +22,10 @@ class ManufacturerObserver
     /**
      * Handle the Brand "updated" event.
      *
-     * @param  \App\Models\Brand  $Manufacturer
+     * @param  \App\Models\Manufacturer  $Manufacturer
      * @return void
      */
-    public function updated(Brand $Manufacturer)
+    public function updated(Manufacturer $Manufacturer)
     {
         //
     }
@@ -33,10 +33,10 @@ class ManufacturerObserver
     /**
      * Handle the Brand "deleted" event.
      *
-     * @param  \App\Models\Brand  $Manufacturer
+     * @param  \App\Models\Manufacturer  $Manufacturer
      * @return void
      */
-    public function deleted(Brand $Manufacturer)
+    public function deleted(Manufacturer $Manufacturer)
     {
         //
     }
@@ -44,10 +44,10 @@ class ManufacturerObserver
     /**
      * Handle the Brand "restored" event.
      *
-     * @param  \App\Models\Brand  $Manufacturer
+     * @param  \App\Models\Manufacturer  $Manufacturer
      * @return void
      */
-    public function restored(Brand $Manufacturer)
+    public function restored(Manufacturer $Manufacturer)
     {
         //
     }
@@ -55,10 +55,10 @@ class ManufacturerObserver
     /**
      * Handle the Brand "force deleted" event.
      *
-     * @param  \App\Models\Brand  $Manufacturer
+     * @param  \App\Models\Manufacturer  $Manufacturer
      * @return void
      */
-    public function forceDeleted(Brand $Manufacturer)
+    public function forceDeleted(Manufacturer $Manufacturer)
     {
         //
     }

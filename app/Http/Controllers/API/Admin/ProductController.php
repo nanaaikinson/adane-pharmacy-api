@@ -26,10 +26,11 @@ class ProductController extends Controller
   public function index(Request $request): JsonResponse
   {
     try {
-      $products = Product::with("brand")
+      $products = Product::with("manufacturer")
         ->with("supplier")
         ->with("shelf")
         ->with("categories")
+        ->with("media")
         ->orderBy("id", "DESC")->get();
 
       return $this->dataResponse($products);
@@ -60,7 +61,7 @@ class ProductController extends Controller
         "cost_price" => $validated->cost_price,
         "shelf_id" => $validated->shelf,
         //"supplier_id" => $validated->supplier ?: NULL,
-        "brand_id" => $validated->brand ?: NULL,
+        "manufacturer_id" => $validated->manufacturer ?: NULL,
         "product_type_id" => $validated->product_type ?: NULL,
         "description" => $validated->description ?: NULL,
         "side_effects" => $validated->side_effects ?: NULL,
@@ -82,7 +83,7 @@ class ProductController extends Controller
         }
         DB::commit();
         // TODO: Fire event for websocket
-        $product = $product->with("categories")->first();
+        $product = $product->with("categories")->with("media")->first();
         return $this->successDataResponse($product, "Product saved successfully");
       }
       DB::rollBack();
@@ -95,13 +96,13 @@ class ProductController extends Controller
   /**
    * Display the specified resource.
    *
-   * @param $mask
+   * @param string $mask
    * @return JsonResponse
    */
-  public function show($mask): JsonResponse
+  public function show(string $mask): JsonResponse
   {
     try {
-      $product = Product::with("brand")
+      $product = Product::with("manufacturer")
         ->with("supplier")
         ->with("shelf")
         ->with("categories")
@@ -142,7 +143,7 @@ class ProductController extends Controller
         "cost_price" => $validated->cost_price,
         "shelf_id" => $validated->shelf,
         //"supplier_id" => $validated->supplier,
-        //"manufacturer_id" => $validated->manufacturer,
+        "manufacturer_id" => $validated->manufacturer,
         "description" => $validated->description ?: NULL,
         "side_effects" => $validated->side_effects ?: NULL,
         "barcode" => $validated->barcode ?: NULL,

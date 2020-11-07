@@ -37,7 +37,7 @@ class StoreProductRequest extends FormRequest
 
       "shelf" => "nullable|exists:shelves,id",
       "supplier" => "nullable|exists:suppliers,id",
-      "brand" => "nullable|exists:brands,id",
+      "manufacturer" => "nullable|exists:manufacturers,id",
       "product_type" => "nullable|exists:product_types,id",
       "description" => "nullable",
       "side_effects" => "nullable",
