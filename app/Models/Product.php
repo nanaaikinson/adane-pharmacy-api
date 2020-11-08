@@ -74,4 +74,5 @@ class Product extends Model implements Auditable, HasMedia
   {
     return $this->hasMany(ProductCategory::class);
   }
+
 }

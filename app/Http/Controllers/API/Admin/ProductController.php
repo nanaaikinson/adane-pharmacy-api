@@ -45,7 +45,7 @@ class ProductController extends Controller
    * @param StoreProductRequest $request
    * @return JsonResponse
    */
-  public function store(StoreProductRequest $request)
+  public function store(StoreProductRequest $request): JsonResponse
   {
     try {
       DB::beginTransaction();
@@ -57,8 +57,8 @@ class ProductController extends Controller
         "expiry_date" => $request->expiry_date ?: NULL,
         //"quantity" => $validated->quantity,
         "reorder_level" => $validated->reorder_level,
-        "selling_price" => $validated->selling_price,
-        "cost_price" => $validated->cost_price,
+        //"selling_price" => $validated->selling_price,
+        //"cost_price" => $validated->cost_price,
         "shelf_id" => $validated->shelf,
         //"supplier_id" => $validated->supplier ?: NULL,
         "manufacturer_id" => $validated->manufacturer ?: NULL,
@@ -105,6 +105,7 @@ class ProductController extends Controller
       $product = Product::with("manufacturer")
         ->with("supplier")
         ->with("shelf")
+        ->with("media")
         ->with("categories")
         ->where("mask", $mask)
         ->firstOrFail();
@@ -139,8 +140,8 @@ class ProductController extends Controller
         "expiry_date" => $validated->expiry_date,
         //"quantity" => $validated->quantity,
         "reorder_level" => $validated->reorder_level,
-        "selling_price" => $validated->selling_price,
-        "cost_price" => $validated->cost_price,
+        //"selling_price" => $validated->selling_price,
+        //"cost_price" => $validated->cost_price,
         "shelf_id" => $validated->shelf,
         //"supplier_id" => $validated->supplier,
         "manufacturer_id" => $validated->manufacturer,
@@ -169,11 +170,9 @@ class ProductController extends Controller
       }
       DB::rollBack();
       return $this->errorResponse("An error occurred while updating this product");
-    }
-    catch (ModelNotFoundException $e) {
+    } catch (ModelNotFoundException $e) {
       return $this->notFoundResponse();
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
     }
   }

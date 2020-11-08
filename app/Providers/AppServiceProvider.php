@@ -3,12 +3,14 @@
 namespace App\Providers;
 
 use App\Models\Category;
+use App\Models\Customer;
 use App\Models\Manufacturer;
 use App\Models\Product;
 use App\Models\ProductType;
 use App\Models\Shelf;
 use App\Models\Supplier;
 use App\Observers\CategoryObserver;
+use App\Observers\CustomerObserver;
 use App\Observers\ManufacturerObserver;
 use App\Observers\ProductObserver;
 use App\Observers\ProductTypeObserver;
@@ -44,6 +46,7 @@ class AppServiceProvider extends ServiceProvider
     Product::observe(ProductObserver::class);
     Shelf::observe(ShelfObserver::class);
     ProductType::observe(ProductTypeObserver::class);
+    Customer::observe(CustomerObserver::class);
 
     // Validation
     Validator::extend('is_image', function ($attribute, $value, $params, $validator) {

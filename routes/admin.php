@@ -5,6 +5,7 @@ use App\Http\Controllers\API\Admin\CategoryController;
 use App\Http\Controllers\API\Admin\ManufacturerController;
 use App\Http\Controllers\API\Admin\ProductController;
 use App\Http\Controllers\API\Admin\ProductTypeController;
+use App\Http\Controllers\API\Admin\PurchaseController;
 use App\Http\Controllers\API\Admin\ShelfController;
 use App\Http\Controllers\API\Admin\SupplierController;
 use Illuminate\Support\Facades\Route;
@@ -20,4 +21,5 @@ Route::middleware('json.response')->group(function() {
   Route::apiResource("products", ProductController::class);
   Route::apiResource("shelves", ShelfController::class);
   Route::apiResource("product-types", ProductTypeController::class);
+  Route::apiResource("purchases", PurchaseController::class);
 });
