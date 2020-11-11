@@ -21,5 +21,7 @@ Route::middleware('json.response')->group(function() {
   Route::apiResource("products", ProductController::class);
   Route::apiResource("shelves", ShelfController::class);
   Route::apiResource("product-types", ProductTypeController::class);
+
+  Route::delete("/purchases/truncate-item/{id}", [PurchaseController::class, 'truncateItem']);
   Route::apiResource("purchases", PurchaseController::class);
 });

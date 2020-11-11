@@ -7,6 +7,7 @@ use App\Models\Customer;
 use App\Models\Manufacturer;
 use App\Models\Product;
 use App\Models\ProductType;
+use App\Models\Purchase;
 use App\Models\Shelf;
 use App\Models\Supplier;
 use App\Observers\CategoryObserver;
@@ -14,6 +15,7 @@ use App\Observers\CustomerObserver;
 use App\Observers\ManufacturerObserver;
 use App\Observers\ProductObserver;
 use App\Observers\ProductTypeObserver;
+use App\Observers\PurchaseObserver;
 use App\Observers\ShelfObserver;
 use App\Observers\SupplierObserver;
 use Illuminate\Support\Facades\Validator;
@@ -47,6 +49,7 @@ class AppServiceProvider extends ServiceProvider
     Shelf::observe(ShelfObserver::class);
     ProductType::observe(ProductTypeObserver::class);
     Customer::observe(CustomerObserver::class);
+    Purchase::observe(PurchaseObserver::class);
 
     // Validation
     Validator::extend('is_image', function ($attribute, $value, $params, $validator) {
