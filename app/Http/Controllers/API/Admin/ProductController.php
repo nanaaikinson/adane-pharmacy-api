@@ -77,10 +77,13 @@ class ProductController extends Controller
         $product->categories()->attach($validated->categories);
 
         if ($request->hasFile("images")) {
-          $product->addMultipleMediaFromRequest($request->file("images"))
+          foreach ($request->file('images') as $image) {
+            $product->addMedia($image)->toMediaCollection('images');
+          }
+          /*$product->addMultipleMediaFromRequest($request->file("images"))
             ->each(function ($file) {
               $file->toMediaCollection("images");
-            });
+            });*/
         }
         DB::commit();
         // TODO: Fire event for websocket
