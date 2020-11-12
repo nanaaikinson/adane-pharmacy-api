@@ -44,12 +44,12 @@ class ProductController extends Controller
    * Store a resource
    *
    * @param StoreProductRequest $request
-   * @return JsonResponse
+   * @return array
    */
 
   public function store(Request $request)
   {
-    dd($request);
+    return $request->all();
   }
   /*public function store(StoreProductRequest $request): JsonResponse
   {
