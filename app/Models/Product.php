@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use OwenIt\Auditing\Contracts\Auditable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Product extends Model implements Auditable, HasMedia
 {
@@ -73,6 +74,19 @@ class Product extends Model implements Auditable, HasMedia
   public function productCategory(): HasMany
   {
     return $this->hasMany(ProductCategory::class);
+  }
+
+  public function registerMediaConversions(Media $media = null): void
+  {
+    $this->addMediaConversion('thumb')
+      ->width(200)
+      ->height(200)
+      ->sharpen(10);
+
+    $this->addMediaConversion('square')
+      ->width(412)
+      ->height(412)
+      ->sharpen(10);
   }
 
 }
