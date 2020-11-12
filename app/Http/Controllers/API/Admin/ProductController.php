@@ -50,7 +50,6 @@ class ProductController extends Controller
   {
     try {
       DB::beginTransaction();
-      return $this->dataResponse($request->input("categories"));
       $validated = (object)$request->validationData();
       $product = Product::create([
         "brand_name" => $validated->brand_name,
