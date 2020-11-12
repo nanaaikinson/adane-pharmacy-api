@@ -30,13 +30,14 @@ class ProductController extends Controller
         ->with("supplier")
         ->with("shelf")
         ->with("categories")
-        ->with("media")
+        //->with("media")
         ->orderBy("id", "DESC")
         ->get()->map(function ($product) {
 
-          $images = $product->media->isNotEmpty() ? $product->media->map(function ($image) {
+          /*$images = $product->media->isNotEmpty() ? $product->media->map(function ($image) {
             return $image->getFullUrl();
-          }) : [];
+          }) : [];*/
+          $images = $product->getFirstMediaUrl('images', 'thumb');
 
           return [
             "id" => (int)$product->id,
