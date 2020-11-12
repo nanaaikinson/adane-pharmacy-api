@@ -20,8 +20,11 @@ class UpdateProductQuantityListener implements ShouldQueue
     if (strtolower($event->action) == "addition") {
       $product->quantity += $event->quantity;
     }
+
     if (strtolower($event->action) == "subtraction") {
-      $product->quantity -= $event->quantity;
+      if ($product->quantity > 0 && ($product->quantity - $event->quantity) >= 0) {
+        $product->quantity -= $event->quantity;
+      }
     }
     $product->save();
   }

@@ -65,6 +65,7 @@ class PurchaseController extends Controller
             "quantity" => $item->quantity,
           ]);
 
+          // Update product quantity
           event(new UpdateProductQuantityEvent($item->product, $item->quantity, "addition"));
         }
 
@@ -89,7 +90,7 @@ class PurchaseController extends Controller
   public function show(string $mask): JsonResponse
   {
     try {
-      $purchase = Purchase::with("purchaseItems")->where("mask", $mask)->firstOrFail();
+      $purchase = Purchase::with("items")->where("mask", $mask)->firstOrFail();
       return $this->dataResponse($purchase);
     }
     catch (ModelNotFoundException $e) {
@@ -104,19 +105,22 @@ class PurchaseController extends Controller
   public function update(StorePurchaseRequest $request, string $mask): JsonResponse
   {
     try {
-      $purchase = Purchase::with("purchaseItems")->where("mask", $mask)->firstOrFail();
-      $purchaseOld = $purchase;
+      $purchase = Purchase::with("items")->where("mask", $mask)->firstOrFail();
+      //$purchaseItems = $purchase->items;
       $validated = (object)$request->validationData();
 
       DB::beginTransaction();
-      $updated = $purchase->update([
+      $updatedPurchase = $purchase->update([
         "supplier_id" => $validated->supplier,
         "purchase_date" => $validated->purchase_date,
         "invoice_number" => $validated->invoice_number,
         "description" => $request->input("description") ?: NULL,
       ]);
 
-      if ($updated) {
+      if ($updatedPurchase) {
+        foreach ($validated->items as $item) {
+
+        }
 
         DB::commit();
         return $this->successResponse("Purchase updated successfully.");
@@ -141,12 +145,13 @@ class PurchaseController extends Controller
   /**
    * Truncate purchase item
    *
-   * @param PurchaseItem $purchaseItem
+   * @param int $id
    * @return JsonResponse
    */
-  public function truncateItem(PurchaseItem $purchaseItem): JsonResponse
+  public function truncateItem(int $id): JsonResponse
   {
     try {
+      $purchaseItem = PurchaseItem::findOrFail($id);
       if ($purchaseItem->delete()) {
         event(new UpdateProductQuantityEvent($purchaseItem->product_id, $purchaseItem->quantity, "subtraction"));
         return $this->successResponse("Item deleted successfully");

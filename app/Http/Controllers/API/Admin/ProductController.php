@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -45,7 +46,12 @@ class ProductController extends Controller
    * @param StoreProductRequest $request
    * @return JsonResponse
    */
-  public function store(StoreProductRequest $request): JsonResponse
+
+  public function store(Request $request)
+  {
+    dd($request);
+  }
+  /*public function store(StoreProductRequest $request): JsonResponse
   {
     try {
       DB::beginTransaction();
@@ -91,7 +97,7 @@ class ProductController extends Controller
     } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
     }
-  }
+  }*/
 
   /**
    * Display the specified resource.
@@ -152,7 +158,7 @@ class ProductController extends Controller
         "discount" => $validated->discount ?: NULL,
         "slug" => Str::slug($validated->generic_name)
       ]);
-
+a
       if ($updated) {
         // Sync categories to product
         $product->categories()->sync($validated->categories);
