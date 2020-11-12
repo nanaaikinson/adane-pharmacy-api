@@ -17,6 +17,7 @@ class CreateSettingsTable extends Migration
       $table->id();
       $table->string('currency')->nullable();
       $table->timestamps();
+      $table->softDeletes();
     });
   }
 

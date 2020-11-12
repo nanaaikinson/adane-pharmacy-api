@@ -8,7 +8,7 @@ use App\Models\Manufacturer;
 class ManufacturerObserver
 {
     /**
-     * Handle the Manufacturer "created" event.
+     * Handle the Brand "created" event.
      *
      * @param  \App\Models\Manufacturer  $Manufacturer
      * @return void
@@ -20,7 +20,7 @@ class ManufacturerObserver
     }
 
     /**
-     * Handle the Manufacturer "updated" event.
+     * Handle the Brand "updated" event.
      *
      * @param  \App\Models\Manufacturer  $Manufacturer
      * @return void
@@ -31,7 +31,7 @@ class ManufacturerObserver
     }
 
     /**
-     * Handle the Manufacturer "deleted" event.
+     * Handle the Brand "deleted" event.
      *
      * @param  \App\Models\Manufacturer  $Manufacturer
      * @return void
@@ -42,7 +42,7 @@ class ManufacturerObserver
     }
 
     /**
-     * Handle the Manufacturer "restored" event.
+     * Handle the Brand "restored" event.
      *
      * @param  \App\Models\Manufacturer  $Manufacturer
      * @return void
@@ -53,7 +53,7 @@ class ManufacturerObserver
     }
 
     /**
-     * Handle the Manufacturer "force deleted" event.
+     * Handle the Brand "force deleted" event.
      *
      * @param  \App\Models\Manufacturer  $Manufacturer
      * @return void

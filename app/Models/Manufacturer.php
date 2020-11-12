@@ -15,7 +15,7 @@ class Manufacturer extends Model implements Auditable
   protected $guarded = [];
 
   /**
-   * Manufacturer has many products
+   * Brand has many products
    *
    * @return HasMany
    */

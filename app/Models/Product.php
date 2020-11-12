@@ -6,12 +6,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use OwenIt\Auditing\Contracts\Auditable;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Product extends Model implements Auditable
+class Product extends Model implements Auditable, HasMedia
 {
   use HasFactory;
   use \OwenIt\Auditing\Auditable;
+  use InteractsWithMedia;
 
   protected $guarded = [];
 
@@ -36,6 +41,26 @@ class Product extends Model implements Auditable
   }
 
   /**
+   * Product belongs to a shelf
+   *
+   * @return BelongsTo
+   */
+  public function shelf(): BelongsTo
+  {
+    return $this->belongsTo(Shelf::class);
+  }
+
+  /**
+   * Product belongs to a type
+   *
+   * @return BelongsTo
+   */
+  public function type(): BelongsTo
+  {
+    return $this->belongsTo(ProductType::class);
+  }
+
+  /**
    * Product belongs to several categories
    *
    * @return BelongsToMany
@@ -45,4 +70,23 @@ class Product extends Model implements Auditable
     return $this->belongsToMany(Category::class, "product_category", "product_id", "category_id")
       ->withTimestamps();
   }
+
+  public function productCategory(): HasMany
+  {
+    return $this->hasMany(ProductCategory::class);
+  }
+
+  public function registerMediaConversions(Media $media = null): void
+  {
+    $this->addMediaConversion('thumb')
+      ->width(200)
+      ->height(200)
+      ->sharpen(10);
+
+    $this->addMediaConversion('square')
+      ->width(412)
+      ->height(412)
+      ->sharpen(10);
+  }
+
 }

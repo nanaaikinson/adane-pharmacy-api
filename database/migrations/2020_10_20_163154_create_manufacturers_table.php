@@ -19,6 +19,7 @@ class CreateManufacturersTable extends Migration
       $table->text('description')->nullable();
       $table->string('mask')->nullable()->unique();
       $table->timestamps();
+      $table->softDeletes();
     });
   }
 
