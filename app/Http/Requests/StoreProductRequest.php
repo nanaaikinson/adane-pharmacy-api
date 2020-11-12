@@ -26,8 +26,8 @@ class StoreProductRequest extends FormRequest
     return [
       "generic_name" => "required",
       "brand_name" => "required",
-      "categories" => "required|array|min:1",
-      "categories.*" => "exists:categories,id",
+      //"categories" => "required|array|min:1",
+      //"categories.*" => "exists:categories,id",
       "purchased_date" => "nullable|date|date_format:Y-m-d",
       "expiry_date" => "nullable|date|date_format:Y-m-d",
       //"quantity" => "required|numeric",

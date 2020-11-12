@@ -12,7 +12,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -47,14 +46,11 @@ class ProductController extends Controller
    * @return JsonResponse
    */
 
-  public function store(Request $request): JsonResponse
-  {
-    return response()->json($request->all());
-  }
-  /*public function store(StoreProductRequest $request): JsonResponse
+  public function store(StoreProductRequest $request): JsonResponse
   {
     try {
       DB::beginTransaction();
+      return $this->dataResponse($request->input("categories"));
       $validated = (object)$request->validationData();
       $product = Product::create([
         "brand_name" => $validated->brand_name,
@@ -97,7 +93,7 @@ class ProductController extends Controller
     } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
     }
-  }*/
+  }
 
   /**
    * Display the specified resource.
