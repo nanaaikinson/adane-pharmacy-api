@@ -43,7 +43,7 @@ class ProductController extends Controller
             "mask" => $product->string,
             "brand_name" => $product->brand_name,
             "generic_name" => $product->generic_name,
-            "quantity" => $product->generic_name,
+            "quantity" => $product->quantity,
             "reorder_level" => $product->generic_name,
             "supplier" => $product->supplier ? $product->supplier->name : NULL,
             "manufacturer" => $product->manufacturer ? $product->manufacturer->name : NULL,
