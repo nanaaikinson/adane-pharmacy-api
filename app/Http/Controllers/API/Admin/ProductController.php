@@ -158,7 +158,7 @@ class ProductController extends Controller
         "discount" => $validated->discount ?: NULL,
         "slug" => Str::slug($validated->generic_name)
       ]);
-a
+
       if ($updated) {
         // Sync categories to product
         $product->categories()->sync($validated->categories);
