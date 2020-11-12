@@ -31,7 +31,26 @@ class ProductController extends Controller
         ->with("shelf")
         ->with("categories")
         ->with("media")
-        ->orderBy("id", "DESC")->get();
+        ->orderBy("id", "DESC")
+        ->get()->map(function ($product) {
+
+          $images = $product->media->isNotEmpty() ? $product->media->map(function ($image) {
+            return $image->getFullUrl();
+          }) : [];
+
+          return [
+            "id" => (int)$product->id,
+            "mask" => $product->string,
+            "brand_name" => $product->brand_name,
+            "generic_name" => $product->generic_name,
+            "quantity" => $product->generic_name,
+            "reorder_level" => $product->generic_name,
+            "supplier" => $product->supplier ? $product->supplier->name : NULL,
+            "manufacturer" => $product->manufacturer ? $product->manufacturer->name : NULL,
+            "shelf" => $product->shelf ? $product->shelf->name : NULL,
+            "images" => $images
+          ];
+        });
 
       return $this->dataResponse($products);
     } catch (Exception $e) {
@@ -42,7 +61,7 @@ class ProductController extends Controller
   /**
    * Store a resource
    *
-   * @param Request $request
+   * @param StoreProductRequest $request
    * @return JsonResponse
    */
 
@@ -54,8 +73,8 @@ class ProductController extends Controller
       $product = Product::create([
         "brand_name" => $validated->brand_name,
         "generic_name" => $validated->generic_name,
-        "purchased_date" => $request->purchased_date ?: NULL,
-        "expiry_date" => $request->expiry_date ?: NULL,
+        //"purchased_date" => $request->purchased_date ?: NULL,
+        //"expiry_date" => $request->expiry_date ?: NULL,
         //"quantity" => $validated->quantity,
         "reorder_level" => $validated->reorder_level,
         //"selling_price" => $validated->selling_price,
@@ -68,7 +87,7 @@ class ProductController extends Controller
         "side_effects" => $validated->side_effects ?: NULL,
         "barcode" => $validated->barcode ?: NULL,
         "product_number" => $validated->product_number ?: NULL,
-        "discount" => $request->discount ?: NULL,
+        //"discount" => $request->input('discount') ?: 0,
         "slug" => Str::slug($validated->generic_name)
       ]);
 

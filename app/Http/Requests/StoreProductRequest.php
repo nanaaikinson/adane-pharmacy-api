@@ -28,8 +28,7 @@ class StoreProductRequest extends FormRequest
       "brand_name" => "required",
       "categories" => "required|array|min:1",
       "categories.*" => "exists:categories,id",
-      "purchased_date" => "nullable|date|date_format:Y-m-d",
-      "expiry_date" => "nullable|date|date_format:Y-m-d",
+
       //"quantity" => "required|numeric",
       "reorder_level" => "required|integer",
       //"selling_price" => "required|numeric",
@@ -44,6 +43,8 @@ class StoreProductRequest extends FormRequest
       "barcode" => "nullable",
       "product_number" => "nullable",
       "discount" => "nullable|integer",
+      //"expiry_date" => "nullable|date|date_format:Y-m-d",
+      //"purchased_date" => "nullable|date|date_format:Y-m-d",
 
       "images" => "nullable|array",
       "images.*" => "mimes:jpeg,jpg,png|max:2048"
