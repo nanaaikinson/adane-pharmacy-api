@@ -34,10 +34,10 @@ class ProductController extends Controller
         ->orderBy("id", "DESC")
         ->get()->map(function ($product) {
 
-          /*$images = $product->media->isNotEmpty() ? $product->media->map(function ($image) {
+          $images = $product->media->isNotEmpty() ? $product->media->map(function ($image) {
             return $image->getFullUrl();
-          }) : [];*/
-          $images = $product->getFirstMediaUrl('images', 'thumb');
+          }) : [];
+          //$images = $product->getFirstMediaUrl('images', 'thumb');
 
           return [
             "id" => (int)$product->id,
