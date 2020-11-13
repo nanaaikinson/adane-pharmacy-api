@@ -79,14 +79,8 @@ class Product extends Model implements Auditable, HasMedia
   public function registerMediaConversions(Media $media = null): void
   {
     $this->addMediaConversion('thumb')
-      ->width(200)
-      ->height(200)
-      ->sharpen(10);
-
-    $this->addMediaConversion('square')
-      ->width(412)
-      ->height(412)
+      ->width(368)
+      ->height(232)
       ->sharpen(10);
   }
-
 }

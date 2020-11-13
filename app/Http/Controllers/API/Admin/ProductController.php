@@ -37,7 +37,6 @@ class ProductController extends Controller
           $images = $product->media->isNotEmpty() ? $product->media->map(function ($image) {
             return $image->getFullUrl();
           }) : [];
-          //$images = $product->getFirstMediaUrl('images', 'thumb');
 
           return [
             "id" => (int)$product->id,
@@ -98,7 +97,8 @@ class ProductController extends Controller
 
         if ($request->hasFile("images")) {
           foreach ($request->file('images') as $image) {
-            $product->addMedia($image)->toMediaCollection('images');
+            //$product->addMedia($image)->toMediaCollection('images');
+            $product->addMedia($image)->toMediaCollection('thumb');
           }
           /*$product->addMultipleMediaFromRequest($request->file("images"))
             ->each(function ($file) {
