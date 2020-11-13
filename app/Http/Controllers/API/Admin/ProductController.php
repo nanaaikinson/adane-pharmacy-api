@@ -41,7 +41,7 @@ class ProductController extends Controller
 
           return [
             "id" => (int)$product->id,
-            "mask" => $product->string,
+            "mask" => $product->mask,
             "brand_name" => $product->brand_name,
             "generic_name" => $product->generic_name,
             "quantity" => $product->quantity,
