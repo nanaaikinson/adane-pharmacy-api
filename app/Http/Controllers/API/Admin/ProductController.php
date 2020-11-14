@@ -209,4 +209,20 @@ class ProductController extends Controller
   {
     //
   }
+
+  /**
+   * @param Request $request
+   * @return JsonResponse
+   */
+  public function search(Request $request): JsonResponse
+  {
+    try {
+      $query = trim($request->input("search_term") ?: "");
+      $results = Product::search(strtolower($query));
+      return $this->dataResponse($results);
+    }
+    catch (Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
+  }
 }

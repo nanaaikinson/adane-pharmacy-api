@@ -17,6 +17,7 @@
     "laravel/passport": "^10.0",
     "laravel/tinker": "^2.0",
     "league/flysystem-aws-s3-v3": "^1.0",
+    "loilo/fuse": "^3.6",
     "owen-it/laravel-auditing": "^11.0",
     "pusher/pusher-php-server": "^4.1",
     "santigarcor/laratrust": "^6.3",

@@ -18,7 +18,10 @@ Route::middleware('json.response')->group(function() {
   Route::apiResource("suppliers", SupplierController::class);
   Route::apiResource("categories", CategoryController::class);
   Route::apiResource("manufacturers", ManufacturerController::class);
+
+  Route::get("/products/search", [ProductController::class, 'search']);
   Route::apiResource("products", ProductController::class);
+
   Route::apiResource("shelves", ShelfController::class);
   Route::apiResource("product-types", ProductTypeController::class);
 
