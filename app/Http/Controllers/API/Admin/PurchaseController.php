@@ -25,7 +25,7 @@ class PurchaseController extends Controller
   public function index(): JsonResponse
   {
     try {
-      $purchases = Purchase::all();
+      $purchases = Purchase::with("supplier")->with("items")->get();
       return $this->dataResponse($purchases);
     }
     catch (Exception $e) {
@@ -58,7 +58,7 @@ class PurchaseController extends Controller
 
           PurchaseItem::create([
             "purchase_id" => $purchase->id,
-            "product_id" => $item->product,
+            "product_id" => $item->product_id,
             "expiry_date" => $item->expiry_date,
             "cost_price" => $item->cost_price,
             "selling_price" => $item->selling_price,
@@ -66,7 +66,7 @@ class PurchaseController extends Controller
           ]);
 
           // Update product quantity
-          event(new UpdateProductQuantityEvent($item->product, $item->quantity, "addition"));
+          event(new UpdateProductQuantityEvent($item->product_id, $item->quantity, "addition"));
         }
 
         DB::commit();
@@ -90,7 +90,9 @@ class PurchaseController extends Controller
   public function show(string $mask): JsonResponse
   {
     try {
-      $purchase = Purchase::with("items")->where("mask", $mask)->firstOrFail();
+      $purchase = Purchase::with("products")
+        ->with("supplier")
+        ->where("mask", $mask)->firstOrFail();
       return $this->dataResponse($purchase);
     }
     catch (ModelNotFoundException $e) {

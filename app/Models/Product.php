@@ -97,5 +97,10 @@ class Product extends Model implements Auditable, HasMedia
       ->width(368)
       ->height(232)
       ->sharpen(10);
+
+    $this->addMediaConversion('square')
+      ->width(350)
+      ->height(350)
+      ->sharpen(10);
   }
 }

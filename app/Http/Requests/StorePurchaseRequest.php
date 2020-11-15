@@ -29,7 +29,7 @@ class StorePurchaseRequest extends FormRequest
       "invoice_number" => "required",
       "details" => "nullable",
       "items" => "required|array",
-      "items.*.product" => "required|exists:products,id",
+      "items.*.product_id" => "required|exists:products,id",
       "items.*.expiry_date" => "required|date|date_format:Y-m-d",
       "items.*.quantity" => "required|numeric|min:1",
       "items.*.cost_price" => "required|regex:/^\d+(\.\d{1,2})?$/",
