@@ -59,7 +59,7 @@ class PurchaseController extends Controller
           PurchaseItem::create([
             "purchase_id" => $purchase->id,
             "product_id" => $item->product_id,
-            "expiry_date" => $item->expiry_date,
+            "expiry_date" => $item->has_expiry ? $request->input("expiry_date") : NULL,
             "cost_price" => $item->cost_price,
             "selling_price" => $item->selling_price,
             "quantity" => $item->quantity,

@@ -83,4 +83,18 @@ class SupplierController extends Controller
   {
 
   }
+
+  public function products(int $supplierId): JsonResponse
+  {
+    try {
+      $supplier = Supplier::with("products")->findOrFail($supplierId);
+      return $this->dataResponse($supplier);
+    }
+    catch (ModelNotFoundException $e) {
+      return $this->notFoundResponse();
+    }
+    catch (Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
+  }
 }

@@ -15,7 +15,9 @@ Route::middleware('json.response')->group(function() {
     Route::post("/login", [AuthController::class, "login"]);
   });
 
+  Route::get("/suppliers/products/{supplierId}", [SupplierController::class, 'products']);
   Route::apiResource("suppliers", SupplierController::class);
+
   Route::apiResource("categories", CategoryController::class);
   Route::apiResource("manufacturers", ManufacturerController::class);
 
