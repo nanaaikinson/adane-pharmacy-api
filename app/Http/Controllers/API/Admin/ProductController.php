@@ -71,12 +71,7 @@ class ProductController extends Controller
       $product = Product::create([
         "brand_name" => $validated->brand_name,
         "generic_name" => $validated->generic_name,
-        //"purchased_date" => $request->purchased_date ?: NULL,
-        //"expiry_date" => $request->expiry_date ?: NULL,
-        //"quantity" => $validated->quantity,
         "reorder_level" => $validated->reorder_level,
-        //"selling_price" => $validated->selling_price,
-        //"cost_price" => $validated->cost_price,
         "shelf_id" => $validated->shelf,
         "supplier_id" => $validated->supplier ?: NULL,
         "manufacturer_id" => $validated->manufacturer ?: NULL,
@@ -85,7 +80,6 @@ class ProductController extends Controller
         "side_effects" => $validated->side_effects ?: NULL,
         "barcode" => $validated->barcode ?: NULL,
         "product_number" => $validated->product_number ?: NULL,
-        //"discount" => $request->input('discount') ?: 0,
         "slug" => Str::slug($validated->generic_name)
       ]);
 
@@ -95,13 +89,8 @@ class ProductController extends Controller
 
         if ($request->hasFile("images")) {
           foreach ($request->file('images') as $image) {
-            //$product->addMedia($image)->toMediaCollection('images');
-            $product->addMedia($image)->toMediaCollection('thumb');
+            $product->addMedia($image)->toMediaCollection('images');
           }
-          /*$product->addMultipleMediaFromRequest($request->file("images"))
-            ->each(function ($file) {
-              $file->toMediaCollection("images");
-            });*/
         }
         DB::commit();
         // TODO: Fire event for websocket
