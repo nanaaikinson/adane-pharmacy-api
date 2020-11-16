@@ -30,7 +30,7 @@ class ProductController extends Controller
         ->with("supplier")
         ->with("shelf")
         ->with("categories")
-        //->with("media")
+        ->with("media")
         ->orderBy("id", "DESC")
         ->get()->map(function ($product) {
 
@@ -42,7 +42,7 @@ class ProductController extends Controller
             "brand_name" => $product->brand_name,
             "generic_name" => $product->generic_name,
             "quantity" => $product->quantity,
-            "reorder_level" => $product->generic_name,
+            "reorder_level" => $product->reorder_level,
             "supplier" => $product->supplier ? $product->supplier->name : NULL,
             "manufacturer" => $product->manufacturer ? $product->manufacturer->name : NULL,
             "shelf" => $product->shelf ? $product->shelf->name : NULL,
