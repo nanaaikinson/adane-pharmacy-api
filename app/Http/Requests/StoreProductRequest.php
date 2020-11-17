@@ -34,7 +34,7 @@ class StoreProductRequest extends FormRequest
       "product_type" => "required|exists:product_types,id",
       "supplier" => "required|exists:suppliers,id",
 
-      "expiry_date" => "required_if:has_expiry,1|date|date_format:Y-m-d",
+      //"expiry_date" => "required_if:has_expiry,1|date|date_format:Y-m-d",
 
       "shelf" => "nullable|exists:shelves,id",
       "manufacturer" => "nullable|exists:manufacturers,id",

@@ -8,9 +8,11 @@ use App\Http\Requests\StorePurchaseRequest;
 use App\Models\Purchase;
 use App\Models\PurchaseItem;
 use App\Traits\ResponseTrait;
+use Barryvdh\DomPDF\PDF;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
 class PurchaseController extends Controller
@@ -94,6 +96,34 @@ class PurchaseController extends Controller
         ->with("supplier")
         ->where("mask", $mask)->firstOrFail();
       return $this->dataResponse($purchase);
+    }
+    catch (ModelNotFoundException $e) {
+      return $this->notFoundResponse();
+    }
+    catch (Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
+  }
+
+  /**
+   * Get a resource
+   *
+   * @param string $mask
+   */
+  public function pdf(string $mask)
+  {
+    try {
+      $purchase = Purchase::with("products")
+        ->with("supplier")
+        ->where("mask", $mask)
+        ->firstOrFail();
+
+      $pdf = App::make('dompdf.wrapper');
+      $pdf->loadView("pdf.purchase-detail", $data = ["d", "a", "s", "h"])
+        ->setPaper('a4', 'landscape');
+      $pdf->save(storage_path("app/public/pdf/") . "purchase.pdf");
+
+      return $pdf->download("purchase.pdf");
     }
     catch (ModelNotFoundException $e) {
       return $this->notFoundResponse();
