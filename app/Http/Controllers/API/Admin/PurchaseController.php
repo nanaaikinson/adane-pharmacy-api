@@ -8,12 +8,11 @@ use App\Http\Requests\StorePurchaseRequest;
 use App\Models\Purchase;
 use App\Models\PurchaseItem;
 use App\Traits\ResponseTrait;
-use Barryvdh\DomPDF\PDF;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Knp\Snappy\Pdf;
 
 class PurchaseController extends Controller
 {
@@ -29,8 +28,7 @@ class PurchaseController extends Controller
     try {
       $purchases = Purchase::with("supplier")->with("items")->get();
       return $this->dataResponse($purchases);
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
     }
   }
@@ -77,8 +75,7 @@ class PurchaseController extends Controller
 
       DB::rollBack();
       return $this->errorResponse("An error occurred while saving this purchase");
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
     }
   }
@@ -96,11 +93,9 @@ class PurchaseController extends Controller
         ->with("supplier")
         ->where("mask", $mask)->firstOrFail();
       return $this->dataResponse($purchase);
-    }
-    catch (ModelNotFoundException $e) {
+    } catch (ModelNotFoundException $e) {
       return $this->notFoundResponse();
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
     }
   }
@@ -118,17 +113,14 @@ class PurchaseController extends Controller
         ->where("mask", $mask)
         ->firstOrFail();
 
-      $pdf = App::make('dompdf.wrapper');
-      $pdf->loadView("pdf.purchase-detail", $data = ["d", "a", "s", "h"])
-        ->setPaper('a4', 'landscape');
-      $pdf->save(storage_path("app/public/pdf/") . "purchase.pdf");
+      $pdf = \PDF::loadView("pdf.purchase-detail", compact("purchase"));
+      $pdf->setPaper('a4')->setOrientation('landscape')->setOption('margin-bottom', 0);
+      $pdf->save(storage_path("app/public/") . "purchase-".time().".pdf");
 
       return $pdf->download("purchase.pdf");
-    }
-    catch (ModelNotFoundException $e) {
+    } catch (ModelNotFoundException $e) {
       return $this->notFoundResponse();
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
     }
   }
@@ -159,11 +151,9 @@ class PurchaseController extends Controller
       }
       DB::rollBack();
       return $this->errorResponse("An error occurred while updating this purchase.");
-    }
-    catch (ModelNotFoundException $e) {
+    } catch (ModelNotFoundException $e) {
       return $this->notFoundResponse();
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
     }
   }
@@ -189,8 +179,7 @@ class PurchaseController extends Controller
         return $this->successResponse("Item deleted successfully");
       }
       return $this->errorResponse("An error occurred while deleting this item");
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
     }
   }
