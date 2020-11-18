@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\Admin\AuthController;
 use App\Http\Controllers\API\Admin\CategoryController;
+use App\Http\Controllers\API\Admin\FileController;
 use App\Http\Controllers\API\Admin\ManufacturerController;
 use App\Http\Controllers\API\Admin\ProductController;
 use App\Http\Controllers\API\Admin\ProductTypeController;
@@ -30,4 +31,6 @@ Route::middleware('json.response')->group(function() {
   Route::delete("/purchases/truncate-item/{id}", [PurchaseController::class, 'truncateItem']);
   Route::get("/purchases/pdf/{mask}", [PurchaseController::class, 'pdf']);
   Route::apiResource("purchases", PurchaseController::class);
+
+  Route::delete("/files/delete/{fileId}", [FileController::class, "destroy"]);
 });

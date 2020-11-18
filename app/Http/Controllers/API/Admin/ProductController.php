@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class ProductController extends Controller
 {
@@ -74,7 +75,7 @@ class ProductController extends Controller
         "generic_name" => $validated->generic_name,
         "reorder_level" => $validated->reorder_level,
         "shelf_id" => $validated->shelf,
-        "has_expiry" => $validated->has_expiry,
+        "has_expiry" => $request->has_expiry ?: 0,
         "supplier_id" => $validated->supplier ?: NULL,
         "manufacturer_id" => $validated->manufacturer ?: NULL,
         "product_type_id" => $validated->product_type ?: NULL,
@@ -199,15 +200,6 @@ class ProductController extends Controller
     //
   }
 
-  public function deleteFile(int $fileId): JsonResponse
-  {
-    try {
-
-    }
-    catch (Exception $e) {
-      return $this->errorResponse($e->getMessage());
-    }
-  }
 
   /**
    * @param Request $request

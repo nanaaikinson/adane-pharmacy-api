@@ -29,7 +29,7 @@ class StoreProductRequest extends FormRequest
       "categories" => "required|array|min:1",
       "categories.*" => "exists:categories,id",
 
-      "has_expiry" => "required",
+      //"has_expiry" => "required",
       "reorder_level" => "required|integer",
       "product_type" => "required|exists:product_types,id",
       "supplier" => "required|exists:suppliers,id",
