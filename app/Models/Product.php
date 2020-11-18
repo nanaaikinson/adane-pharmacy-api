@@ -91,16 +91,16 @@ class Product extends Model implements Auditable, HasMedia
     return $this->hasMany(ProductCategory::class);
   }
 
-  public function registerMediaConversions(Media $media = null): void
-  {
-    $this->addMediaConversion('thumb')
-      ->width(368)
-      ->height(232)
-      ->sharpen(10);
-
-    $this->addMediaConversion('square')
-      ->width(350)
-      ->height(350)
-      ->sharpen(10);
-  }
+//  public function registerMediaConversions(Media $media = null): void
+//  {
+//    $this->addMediaConversion('thumb')
+//      ->width(368)
+//      ->height(232)
+//      ->sharpen(10);
+//
+//    $this->addMediaConversion('square')
+//      ->width(350)
+//      ->height(350)
+//      ->sharpen(10);
+//  }
 }

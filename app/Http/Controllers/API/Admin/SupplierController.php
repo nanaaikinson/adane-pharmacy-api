@@ -18,7 +18,8 @@ class SupplierController extends Controller
   public function index(Request $request): JsonResponse
   {
     try {
-      return $this->dataResponse(Supplier::orderBy("id", "DESC")->get());
+      $suppliers = Supplier::with("products")->orderBy("id", "DESC")->get();
+      return $this->dataResponse($suppliers);
     } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
     }

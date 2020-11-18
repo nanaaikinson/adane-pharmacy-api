@@ -130,7 +130,7 @@ class PurchaseController extends Controller
   {
     try {
       $purchase = Purchase::with("items")->where("mask", $mask)->firstOrFail();
-      //$purchaseItems = $purchase->items;
+      $purchaseItems = $purchase->items;
       $validated = (object)$request->validationData();
 
       DB::beginTransaction();
@@ -143,7 +143,26 @@ class PurchaseController extends Controller
 
       if ($updatedPurchase) {
         foreach ($validated->items as $item) {
+          $item = (object)$item;
 
+          PurchaseItem::create([
+            "purchase_id" => $purchase->id,
+            "product_id" => $item->product_id,
+            "expiry_date" => $item->has_expiry ? $request->input("expiry_date") : NULL,
+            "cost_price" => $item->cost_price,
+            "selling_price" => $item->selling_price,
+            "quantity" => $item->quantity,
+          ]);
+
+          // Update product quantity
+          event(new UpdateProductQuantityEvent($item->product_id, $item->quantity, "addition"));
+        }
+
+        foreach ($purchaseItems as $item) {
+          $item->delete();
+
+          // Update product quantity
+          event(new UpdateProductQuantityEvent($item->product_id, $item->quantity, "subtraction"));
         }
 
         DB::commit();

@@ -152,9 +152,9 @@ class ProductController extends Controller
         "purchased_date" => $validated->purchased_date,
         "has_expiry" => $validated->has_expiry,
         "reorder_level" => $validated->reorder_level,
-        "shelf_id" => $validated->shelf,
+        "shelf_id" => $request->shelf ?: NULL,
         "supplier_id" => $validated->supplier,
-        "manufacturer_id" => $validated->manufacturer,
+        "manufacturer_id" => $request->manufacturer ?: NULL,
         "description" => $validated->description ?: NULL,
         "side_effects" => $validated->side_effects ?: NULL,
         "barcode" => $validated->barcode ?: NULL,
@@ -169,14 +169,15 @@ class ProductController extends Controller
 
         // Upload files of any
         if ($request->hasFile("images")) {
-          $uploaded = $product->addMultipleMediaFromRequest($request->file("images"))
-            ->each(function ($file) {
-              $file->toMediaCollection("images");
-            });
-          dd($uploaded);
+          foreach ($request->file('images') as $image) {
+            $product->addMedia($image)->toMediaCollection('images');
+          }
         }
 
+        DB::commit();
         // TODO: Fire event for websocket
+        $product = $product->with("categories")->with("media")->first();
+        return $this->successDataResponse($product, "Product updated successfully");
       }
       DB::rollBack();
       return $this->errorResponse("An error occurred while updating this product");
@@ -196,6 +197,16 @@ class ProductController extends Controller
   public function destroy(string $mask): JsonResponse
   {
     //
+  }
+
+  public function deleteFile(int $fileId): JsonResponse
+  {
+    try {
+
+    }
+    catch (Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
   }
 
   /**
