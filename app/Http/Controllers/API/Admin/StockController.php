@@ -36,15 +36,16 @@ class StockController extends Controller
           "product_name" => $product->generic_name,
           "supplier" => $product->supplier ? $product->supplier->name : NULL,
           "quantity" => $product->quantity,
-          "sold_quantity" => $product->orderItems->isNotEmpty() ? $product->orderItems : 0
+          "sold_quantity" => $product->orderItems->isNotEmpty() ? $product->orderItems : 0,
         ];
       });
-      // Arr
+
+      // Pagination Data
       $arr = $products->toArray();
-      dd($arr);
       $extra = [
         "current_page" => $arr['current_page'],
         "next_page" => $arr['next_page_url'],
+        "last_page" => $arr['last_page_url'],
         "total" => $arr['total'],
       ];
       $data->page_info = $extra;
