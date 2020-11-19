@@ -8,6 +8,7 @@ use App\Http\Controllers\API\Admin\ProductController;
 use App\Http\Controllers\API\Admin\ProductTypeController;
 use App\Http\Controllers\API\Admin\PurchaseController;
 use App\Http\Controllers\API\Admin\ShelfController;
+use App\Http\Controllers\API\Admin\StockController;
 use App\Http\Controllers\API\Admin\SupplierController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,4 +34,6 @@ Route::middleware('json.response')->group(function() {
   Route::apiResource("purchases", PurchaseController::class);
 
   Route::delete("/files/delete/{fileId}", [FileController::class, "destroy"]);
+
+  Route::get("/stock", [StockController::class, "index"]);
 });

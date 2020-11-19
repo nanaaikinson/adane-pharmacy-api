@@ -103,4 +103,9 @@ class Product extends Model implements Auditable, HasMedia
 //      ->height(350)
 //      ->sharpen(10);
 //  }
+
+  public function orderItems(): HasMany
+  {
+    return $this->hasMany(OrderItem::class);
+  }
 }

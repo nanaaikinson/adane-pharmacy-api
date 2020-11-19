@@ -151,14 +151,12 @@ class ProductController extends Controller
   {
     try {
       $product = Product::where("mask", $mask)->firstOrFail();
-      $media = $product->getMedia();
       $validated = (object)$request->validationData();
       DB::beginTransaction();
 
       $updated = $product->update([
         "brand_name" => $validated->brand_name,
         "generic_name" => $validated->generic_name,
-        "purchased_date" => $validated->purchased_date,
         "has_expiry" => $validated->has_expiry,
         "reorder_level" => $validated->reorder_level,
         "shelf_id" => $request->shelf ?: NULL,
