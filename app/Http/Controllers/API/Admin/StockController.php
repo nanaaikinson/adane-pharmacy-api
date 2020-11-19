@@ -30,12 +30,15 @@ class StockController extends Controller
       // Transform data
       $data = new \stdClass();
       $data->items = $products->getCollection()->transform(function ($product) {
+        $quantity = (float)$product->quantity;
+
         return [
           "product_id" => $product->id,
           "product_mask" => $product->mask,
           "product_name" => $product->generic_name,
           "supplier" => $product->supplier ? $product->supplier->name : NULL,
-          "quantity" => $product->quantity,
+          "quantity" => $quantity,
+          "status" => $quantity < 1 ? "Out of stock" : ($quantity <= $product->reorder_level ? "Needs Reorder" : "In stock"),
           "sold_quantity" => $product->orderItems->isNotEmpty() ? $product->orderItems : 0,
         ];
       });
