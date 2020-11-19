@@ -119,13 +119,20 @@ class ProductController extends Controller
       $product = Product::with("manufacturer")
         ->with("supplier")
         ->with("shelf")
-        ->with("media")
         ->with("categories")
         ->where("mask", $mask)
         ->firstOrFail();
 
-//      $product = Product::with("productCategory")->where("mask", $mask)->firstOrFail();
+      $images = ($product->media->map(function($file) {
+        return [
+          "file_id" => $file->id,
+          "url" => $file->getFullUrl()
+        ];
+      }));
 
+      $product->setAttribute("images", $images);
+      unset($product->media);
+      
       return $this->dataResponse($product);
     } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
