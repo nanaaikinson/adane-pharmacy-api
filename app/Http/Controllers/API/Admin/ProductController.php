@@ -126,13 +126,14 @@ class ProductController extends Controller
       $images = ($product->media->map(function($file) {
         return [
           "file_id" => $file->id,
-          "url" => $file->getFullUrl()
+          "url" => $file->getFullUrl(),
+          "file_name" => $file->file_name,
         ];
       }));
 
       $product->setAttribute("images", $images);
       unset($product->media);
-      
+
       return $this->dataResponse($product);
     } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
