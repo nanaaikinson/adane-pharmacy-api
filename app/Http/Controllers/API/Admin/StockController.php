@@ -24,6 +24,7 @@ class StockController extends Controller
     try {
       $limit = $request->get("limit") ?: 20;
       $products = Product::with("supplier")
+        ->with("categories")
         ->with("orderItems")
         ->paginate($limit);
 
@@ -37,6 +38,7 @@ class StockController extends Controller
           "product_mask" => $product->mask,
           "product_name" => $product->generic_name,
           "supplier" => $product->supplier ? $product->supplier->name : NULL,
+          "category" => $product->categories->isNotEmpty() ? $product->categories->map(fn($category) => $category->name) : NULL,
           "quantity" => $quantity,
           "product_type" => $product->type ? $product->type->name : NULL,
           "reorder_level" => $product->reorder_level,

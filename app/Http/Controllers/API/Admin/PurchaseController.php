@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Knp\Snappy\Pdf;
 
 class PurchaseController extends Controller
@@ -113,11 +114,19 @@ class PurchaseController extends Controller
         ->where("mask", $mask)
         ->firstOrFail();
 
+      $filename = "purchase-".time().".pdf";
       $pdf = \PDF::loadView("pdf.purchase-detail", compact("purchase"));
       $pdf->setPaper('a4')->setOrientation('landscape')->setOption('margin-bottom', 0);
-      $pdf->save(storage_path("app/public/") . "purchase-".time().".pdf");
+      $pdf->save(storage_path("app/public/") . $filename);
 
-      return $pdf->download("purchase.pdf");
+      $file = Storage::disk("public")->get($filename);
+
+      if ($file) {
+        $base64 = "data:application/pdf;base64," . base64_encode($file);
+        Storage::disk("public")->delete($filename);
+        return $this->dataResponse(['url' => $base64, 'filename' => $filename]);
+      }
+      return $this->errorResponse('An error occurred while generating the PDF version of this purchase');
     } catch (ModelNotFoundException $e) {
       return $this->notFoundResponse();
     } catch (Exception $e) {
