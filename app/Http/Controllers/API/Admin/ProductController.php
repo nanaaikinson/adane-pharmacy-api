@@ -74,16 +74,16 @@ class ProductController extends Controller
         "brand_name" => $validated->brand_name,
         "generic_name" => $validated->generic_name,
         "reorder_level" => $validated->reorder_level,
-        "shelf_id" => $validated->shelf,
+        "shelf_id" => $request->shelf ?: NULL,
         "has_expiry" => $request->has_expiry ?: 0,
-        "supplier_id" => $validated->supplier ?: NULL,
-        "manufacturer_id" => $validated->manufacturer ?: NULL,
-        "product_type_id" => $validated->product_type ?: NULL,
-        "description" => $validated->description ?: NULL,
-        "side_effects" => $validated->side_effects ?: NULL,
-        "barcode" => $validated->barcode ?: NULL,
-        "product_number" => $validated->product_number ?: NULL,
-        "slug" => Str::slug($validated->generic_name)
+        "supplier_id" => $request->supplier ?: NULL,
+        "manufacturer_id" => $request->manufacturer ?: NULL,
+        "product_type_id" => $request->product_type ?: NULL,
+        "description" => $request->description ?: NULL,
+        "side_effects" => $request->side_effects ?: NULL,
+        "barcode" => $request->barcode ?: NULL,
+        "product_number" => $request->product_number ?: NULL,
+        "slug" => Str::slug($request->generic_name)
       ]);
 
       if ($product) {
@@ -157,16 +157,16 @@ class ProductController extends Controller
       $updated = $product->update([
         "brand_name" => $validated->brand_name,
         "generic_name" => $validated->generic_name,
-        "has_expiry" => $validated->has_expiry,
         "reorder_level" => $validated->reorder_level,
         "shelf_id" => $request->shelf ?: NULL,
-        "supplier_id" => $validated->supplier,
+        "has_expiry" => $request->has_expiry ?: 0,
+        "supplier_id" => $request->supplier ?: NULL,
         "manufacturer_id" => $request->manufacturer ?: NULL,
-        "description" => $validated->description ?: NULL,
-        "side_effects" => $validated->side_effects ?: NULL,
-        "barcode" => $validated->barcode ?: NULL,
-        "product_number" => $validated->product_number ?: NULL,
-        "discount" => $validated->discount ?: NULL,
+        "product_type_id" => $request->product_type ?: NULL,
+        "description" => $request->description ?: NULL,
+        "side_effects" => $request->side_effects ?: NULL,
+        "barcode" => $request->barcode ?: NULL,
+        "product_number" => $request->product_number ?: NULL,
         "slug" => Str::slug($validated->generic_name)
       ]);
 

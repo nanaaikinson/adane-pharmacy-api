@@ -30,8 +30,21 @@ class Product extends Model implements Auditable, HasMedia
   public static function search(string $query): array
   {
     $columns = ["id", "generic_name", "brand_name", "quantity"];
-    $products = static::select($columns)->get();
-    $fuse = new Fuse($products->toArray(), ["keys" => ["generic_name", "brand_name"]]);
+    //$products = static::select($columns);
+    $products = static::with("supplier")
+      ->with("manufacturer")
+      ->with("type")
+      ->get();
+
+    $fuse = new Fuse($products->toArray(), [
+      "keys" => [
+        "generic_name",
+        "brand_name",
+        "supplier.name",
+        "manufacturer.name",
+        "type.name",
+      ]
+    ]);
     return $fuse->search($query);
   }
 
@@ -91,8 +104,8 @@ class Product extends Model implements Auditable, HasMedia
     return $this->hasMany(ProductCategory::class);
   }
 
-//  public function registerMediaConversions(Media $media = null): void
-//  {
+  public function registerMediaConversions(Media $media = null): void
+  {
 //    $this->addMediaConversion('thumb')
 //      ->width(368)
 //      ->height(232)
@@ -102,7 +115,7 @@ class Product extends Model implements Auditable, HasMedia
 //      ->width(350)
 //      ->height(350)
 //      ->sharpen(10);
-//  }
+  }
 
   public function orderItems(): HasMany
   {

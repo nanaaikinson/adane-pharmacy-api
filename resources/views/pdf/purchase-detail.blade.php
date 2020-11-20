@@ -8,7 +8,7 @@
     <title>PURCHASE DETAIL</title>
     <link rel="stylesheet" href="{{ public_path('assets/css/bootstrap.min.css') }}">
   </head>
-  
+
   <body>
     <div class="row mb-5">
       <div class="col-md-6">
