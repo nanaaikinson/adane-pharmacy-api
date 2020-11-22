@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Fuse\Fuse;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,32 +20,6 @@ class Product extends Model implements Auditable, HasMedia
 
   protected $guarded = [];
 
-  /**
-   * fuzzy search of products
-   *
-   * @param string $query
-   * @return array
-   */
-  public static function search(string $query): array
-  {
-    $columns = ["id", "generic_name", "brand_name", "quantity"];
-    //$products = static::select($columns);
-    $products = static::with("supplier")
-      ->with("manufacturer")
-      ->with("type")
-      ->get();
-
-    $fuse = new Fuse($products->toArray(), [
-      "keys" => [
-        "generic_name",
-        "brand_name",
-        "supplier.name",
-        "manufacturer.name",
-        "type.name",
-      ]
-    ]);
-    return $fuse->search($query);
-  }
 
   /**
    * Product belongs to a manufacturer

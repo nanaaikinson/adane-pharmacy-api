@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Fuse\Fuse;
 
 class ProductController extends Controller
 {
@@ -36,10 +37,18 @@ class ProductController extends Controller
         ->get()->map(function ($product) {
 
           $images = $product->media->isNotEmpty() ? $product->media[0]->getFullUrl() : NULL;
+          $media = ($product->media->map(function($file) {
+            return [
+              "file_id" => $file->id,
+              "url" => $file->getFullUrl(),
+              "file_name" => $file->file_name,
+            ];
+          }));
 
           return [
             "id" => (int)$product->id,
             "mask" => $product->mask,
+            "selling_price" => $product->selling_price,
             "brand_name" => $product->brand_name,
             "generic_name" => $product->generic_name,
             "quantity" => $product->quantity,
@@ -48,7 +57,8 @@ class ProductController extends Controller
             "supplier" => $product->supplier ? $product->supplier->name : NULL,
             "manufacturer" => $product->manufacturer ? $product->manufacturer->name : NULL,
             "shelf" => $product->shelf ? $product->shelf->name : NULL,
-            "images" => $images
+            "images" => $images,
+            "media" => $media,
           ];
         });
 
@@ -214,9 +224,36 @@ class ProductController extends Controller
   public function search(Request $request): JsonResponse
   {
     try {
-      $query = trim($request->input("search_term") ?: "");
-      $results = Product::search(strtolower($query));
-      return $this->dataResponse($results);
+      $query = trim(strtolower($request->input("search_term") ?: ""));
+      $results = Product::with("supplier")
+        ->with("manufacturer")
+        ->with("categories")
+        ->with("type")->get()
+        ->map(function($product) {
+
+          return [
+            "generic_name" => $product->generic_name,
+            "supplier" => $product->supplier ? $product->suplier->name : NULL,
+            "type" => $product->type ? $product->type->name : NULL,
+            "quantity" => $product->quantity,
+            "selling_price" => $product->selling_price,
+            "categories" => $product->categories->isNotEmpty() ? $product->categories->map(function ($cat) {
+              return $cat->name;
+            }) : [],
+          ];
+        });
+
+
+      $fuse = new Fuse($results->toArray(), [
+        "keys" => [
+          "generic_name",
+          "brand_name",
+          "supplier.name",
+          "manufacturer.name",
+          "type.name",
+        ]
+      ]);
+      return $this->dataResponse($fuse->search($query));
     }
     catch (Exception $e) {
       return $this->errorResponse($e->getMessage());

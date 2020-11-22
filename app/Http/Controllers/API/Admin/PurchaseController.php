@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\Admin;
 
+use App\Events\UpdateProductDetailEvent;
 use App\Events\UpdateProductQuantityEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePurchaseRequest;
@@ -68,6 +69,11 @@ class PurchaseController extends Controller
 
           // Update product quantity
           event(new UpdateProductQuantityEvent($item->product_id, $item->quantity, "addition"));
+
+          // Update product detail
+          if ($item->is_selling_price) {
+            event(new UpdateProductDetailEvent($item->product_id, $item->selling_price));
+          }
         }
 
         DB::commit();
@@ -165,6 +171,11 @@ class PurchaseController extends Controller
 
           // Update product quantity
           event(new UpdateProductQuantityEvent($item->product_id, $item->quantity, "addition"));
+
+          // Update product detail
+          if ($item->is_selling_price) {
+            event(new UpdateProductDetailEvent($item->product_id, $item->selling_price));
+          }
         }
 
         foreach ($purchaseItems as $item) {
