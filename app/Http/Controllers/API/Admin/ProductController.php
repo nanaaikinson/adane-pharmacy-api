@@ -225,40 +225,44 @@ class ProductController extends Controller
   {
     try {
       $query = trim(strtolower($request->input("search_term") ?: ""));
-      $results = Product::with("supplier")
-        ->with("manufacturer")
-        ->with("categories")
-        ->with("media")
-        ->with("type")->get()
-        ->map(function($product) {
+      if ($query) {
+        $results = Product::with("supplier")
+          ->with("manufacturer")
+          ->with("categories")
+          ->with("media")
+          ->with("type")->get()
+          ->map(function($product) {
 
-          return [
-            "generic_name" => $product->generic_name,
-            "brand_name" => $product->brand_name,
-            "supplier" => $product->supplier ? $product->supplier->name : NULL,
-            "manufacturer" => $product->manufacturer ? $product->manufacturer->name : NULL,
-            "type" => $product->type ? $product->type->name : NULL,
-            "quantity" => $product->quantity,
-            "selling_price" => $product->selling_price,
-            "categories" => $product->categories->isNotEmpty() ? $product->categories->map(function ($cat) {
-              return $cat->name;
-            }) : [],
-            "media" => $product->media->isNotEmpty() ? $product->media->map(function ($file) {
-              return $file->getFullUrl();
-            }) : [],
-          ];
-        });
+            return [
+              "generic_name" => $product->generic_name,
+              "brand_name" => $product->brand_name,
+              "supplier" => $product->supplier ? $product->supplier->name : NULL,
+              "manufacturer" => $product->manufacturer ? $product->manufacturer->name : NULL,
+              "type" => $product->type ? $product->type->name : NULL,
+              "quantity" => $product->quantity,
+              "selling_price" => $product->selling_price,
+              "categories" => $product->categories->isNotEmpty() ? $product->categories->map(function ($cat) {
+                return $cat->name;
+              }) : [],
+              "media" => $product->media->isNotEmpty() ? $product->media->map(function ($file) {
+                return $file->getFullUrl();
+              }) : [],
+            ];
+          });
 
-      $fuse = new Fuse($results->toArray(), [
-        "keys" => [
-          "generic_name",
-          "brand_name",
-          "supplier",
-          "manufacturer",
-          "type",
-        ]
-      ]);
-      return $this->dataResponse($fuse->search($query));
+        $fuse = new Fuse($results->toArray(), [
+          "keys" => [
+            "generic_name",
+            "brand_name",
+            "supplier",
+            "manufacturer",
+            "type",
+          ]
+        ]);
+        return $this->dataResponse($fuse->search($query));
+      }
+      return $this->dataResponse([]);
+
     }
     catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
