@@ -228,29 +228,34 @@ class ProductController extends Controller
       $results = Product::with("supplier")
         ->with("manufacturer")
         ->with("categories")
+        ->with("media")
         ->with("type")->get()
         ->map(function($product) {
 
           return [
             "generic_name" => $product->generic_name,
-            "supplier" => $product->supplier ? $product->suplier->name : NULL,
+            "brand_name" => $product->brand_name,
+            "supplier" => $product->supplier ? $product->supplier->name : NULL,
+            "manufacturer" => $product->manufacturer ? $product->manufacturer->name : NULL,
             "type" => $product->type ? $product->type->name : NULL,
             "quantity" => $product->quantity,
             "selling_price" => $product->selling_price,
             "categories" => $product->categories->isNotEmpty() ? $product->categories->map(function ($cat) {
               return $cat->name;
             }) : [],
+            "media" => $product->media->isNotEmpty() ? $product->media->map(function ($file) {
+              return $file->getFullUrl();
+            }) : [],
           ];
         });
-
 
       $fuse = new Fuse($results->toArray(), [
         "keys" => [
           "generic_name",
           "brand_name",
-          "supplier.name",
-          "manufacturer.name",
-          "type.name",
+          "supplier",
+          "manufacturer",
+          "type",
         ]
       ]);
       return $this->dataResponse($fuse->search($query));
