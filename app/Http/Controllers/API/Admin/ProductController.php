@@ -275,9 +275,31 @@ class ProductController extends Controller
   {
     try {
       $product = Product::with("purchaseItem")
-      ->where("mask", $mask)->firstOrFail();
+        ->with("manufacturer")
+        ->with("categories")
+        ->with("media")
+        ->with("type")
+        ->where("mask", $mask)
+        ->firstOrFail();
 
-      return $this->dataResponse($product);
+      return $this->dataResponse([
+        "id" => $product->id,
+        "generic_name" => $product->generic_name,
+        "brand_name" => $product->brand_name,
+        "mask" => $product->mask,
+        "supplier" => $product->supplier ? $product->supplier->name : NULL,
+        "manufacturer" => $product->manufacturer ? $product->manufacturer->name : NULL,
+        "type" => $product->type ? $product->type->name : NULL,
+        "quantity" => $product->quantity,
+        "selling_price" => $product->selling_price,
+        "categories" => $product->categories->isNotEmpty() ? $product->categories->map(function ($cat) {
+          return $cat->name;
+        }) : [],
+        "media" => $product->media->isNotEmpty() ? $product->media->map(function ($file) {
+          return $file->getFullUrl();
+        }) : [],
+        "purchase_items" => $product->purchaseItem
+      ]);
     }
     catch (ModelNotFoundException $e) {
       return $this->notFoundResponse();
