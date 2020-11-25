@@ -25,6 +25,7 @@ Route::middleware('json.response')->group(function() {
 
   Route::get("/products/search", [ProductController::class, 'search']);
   Route::post("/products/{mask}/update", [ProductController::class, 'update']);
+  Route::get("/products/{mask}/batch", [ProductController::class, 'batch']);
   Route::apiResource("products", ProductController::class);
 
   Route::apiResource("shelves", ShelfController::class);

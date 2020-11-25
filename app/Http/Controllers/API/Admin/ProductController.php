@@ -234,8 +234,10 @@ class ProductController extends Controller
           ->map(function($product) {
 
             return [
+              "id" => $product->id,
               "generic_name" => $product->generic_name,
               "brand_name" => $product->brand_name,
+              "mask" => $product->mask,
               "supplier" => $product->supplier ? $product->supplier->name : NULL,
               "manufacturer" => $product->manufacturer ? $product->manufacturer->name : NULL,
               "type" => $product->type ? $product->type->name : NULL,
@@ -263,6 +265,22 @@ class ProductController extends Controller
       }
       return $this->dataResponse([]);
 
+    }
+    catch (Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
+  }
+
+  public function batch(string $mask): JsonResponse
+  {
+    try {
+      $product = Product::with("purchaseItem")
+      ->where("mask", $mask)->firstOrFail();
+
+      return $this->dataResponse($product);
+    }
+    catch (ModelNotFoundException $e) {
+      return $this->notFoundResponse();
     }
     catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
