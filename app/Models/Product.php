@@ -95,7 +95,7 @@ class Product extends Model implements Auditable, HasMedia
     return $this->hasMany(OrderItem::class);
   }
 
-  public function purchaseItem(): HasMany
+  public function purchaseItems(): HasMany
   {
     return $this->hasMany(PurchaseItem::class);
   }

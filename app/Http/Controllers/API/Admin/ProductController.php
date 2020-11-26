@@ -274,7 +274,7 @@ class ProductController extends Controller
   public function batch(string $mask): JsonResponse
   {
     try {
-      $product = Product::with("purchaseItem")
+      $product = Product::with("purchaseItems")
         ->with("manufacturer")
         ->with("categories")
         ->with("media")
@@ -298,7 +298,10 @@ class ProductController extends Controller
         "media" => $product->media->isNotEmpty() ? $product->media->map(function ($file) {
           return $file->getFullUrl();
         }) : [],
-        "purchase_items" => $product->purchaseItem
+        "purchase_items" => $product->purchaseItems->isNotEmpty() ? $product->purchaseItems->map(function ($item) {
+          $item->setAttribute("purchase", $item->purchase);
+          return $item;
+        }) : [],
       ]);
     }
     catch (ModelNotFoundException $e) {
