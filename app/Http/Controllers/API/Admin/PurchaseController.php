@@ -9,6 +9,7 @@ use App\Http\Requests\StorePurchaseRequest;
 use App\Models\Purchase;
 use App\Models\PurchaseItem;
 use App\Traits\ResponseTrait;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
@@ -52,6 +53,7 @@ class PurchaseController extends Controller
         "purchase_date" => $validated->purchase_date,
         "invoice_number" => $validated->invoice_number,
         "description" => $request->input("description") ?: NULL,
+        "batch_number" => gmdate("YmdGis")
       ]);
 
       if ($purchase) {
