@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\API\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use App\Traits\ResponseTrait;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -14,55 +16,50 @@ class StockController extends Controller
   /**
    * List stock items
    *
+   * @param Request $request
    * @return JsonResponse
    */
-  public function index(): JsonResponse
+  public function index(Request $request): JsonResponse
   {
+    try {
+      $limit = $request->get("limit") ?: 20;
+      $products = Product::with("supplier")
+        ->with("categories")
+        ->with("orderItems")
+        ->paginate($limit);
 
-  }
+      // Transform data
+      $data = new \stdClass();
+      $data->items = $products->getCollection()->transform(function ($product) {
+        $quantity = (float)$product->quantity;
 
-  /**
-   * Store a newly created resource in storage.
-   *
-   * @param \Illuminate\Http\Request $request
-   * @return \Illuminate\Http\Response
-   */
-  public function store(Request $request)
-  {
-    //
-  }
+        return [
+          "product_id" => $product->id,
+          "product_mask" => $product->mask,
+          "product_name" => $product->generic_name,
+          "supplier" => $product->supplier ? $product->supplier->name : NULL,
+          "category" => $product->categories->isNotEmpty() ? $product->categories->map(fn($category) => $category->name) : NULL,
+          "quantity" => $quantity,
+          "product_type" => $product->type ? $product->type->name : NULL,
+          "reorder_level" => $product->reorder_level,
+          "status" => $quantity < 1 ? "Out of stock" : ($quantity <= $product->reorder_level ? "Needs Reorder" : "In stock"),
+          "sold_quantity" => $product->orderItems->isNotEmpty() ? $product->orderItems : 0,
+        ];
+      });
 
-  /**
-   * Display the specified resource.
-   *
-   * @param int $id
-   * @return \Illuminate\Http\Response
-   */
-  public function show($id)
-  {
-    //
-  }
+      // Pagination Data
+      $arr = $products->toArray();
+      $extra = [
+        "current_page" => $arr['current_page'],
+        "next_page" => $arr['next_page_url'],
+        "last_page" => $arr['last_page_url'],
+        "total" => $arr['total'],
+      ];
+      $data->page_info = $extra;
 
-  /**
-   * Update the specified resource in storage.
-   *
-   * @param \Illuminate\Http\Request $request
-   * @param int $id
-   * @return \Illuminate\Http\Response
-   */
-  public function update(Request $request, $id)
-  {
-    //
-  }
-
-  /**
-   * Remove the specified resource from storage.
-   *
-   * @param int $id
-   * @return \Illuminate\Http\Response
-   */
-  public function destroy($id)
-  {
-    //
+      return $this->dataResponse($data);
+    } catch (Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
   }
 }

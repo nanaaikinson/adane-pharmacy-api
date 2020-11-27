@@ -20,6 +20,7 @@ class Product extends Model implements Auditable, HasMedia
 
   protected $guarded = [];
 
+
   /**
    * Product belongs to a manufacturer
    *
@@ -78,15 +79,24 @@ class Product extends Model implements Auditable, HasMedia
 
   public function registerMediaConversions(Media $media = null): void
   {
-    $this->addMediaConversion('thumb')
-      ->width(200)
-      ->height(200)
-      ->sharpen(10);
-
-    $this->addMediaConversion('square')
-      ->width(412)
-      ->height(412)
-      ->sharpen(10);
+//    $this->addMediaConversion('thumb')
+//      ->width(368)
+//      ->height(232)
+//      ->sharpen(10);
+//
+//    $this->addMediaConversion('square')
+//      ->width(350)
+//      ->height(350)
+//      ->sharpen(10);
   }
 
+  public function orderItems(): HasMany
+  {
+    return $this->hasMany(OrderItem::class);
+  }
+
+  public function purchaseItems(): HasMany
+  {
+    return $this->hasMany(PurchaseItem::class);
+  }
 }

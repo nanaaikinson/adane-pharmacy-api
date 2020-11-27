@@ -12,6 +12,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Fuse\Fuse;
 
 class ProductController extends Controller
 {
@@ -34,21 +36,29 @@ class ProductController extends Controller
         ->orderBy("id", "DESC")
         ->get()->map(function ($product) {
 
-          $images = $product->media->isNotEmpty() ? $product->media->map(function ($image) {
-            return $image->getFullUrl();
-          }) : [];
+          $images = $product->media->isNotEmpty() ? $product->media[0]->getFullUrl() : NULL;
+          $media = ($product->media->map(function($file) {
+            return [
+              "file_id" => $file->id,
+              "url" => $file->getFullUrl(),
+              "file_name" => $file->file_name,
+            ];
+          }));
 
           return [
             "id" => (int)$product->id,
-            "mask" => $product->string,
+            "mask" => $product->mask,
+            "selling_price" => $product->selling_price,
             "brand_name" => $product->brand_name,
             "generic_name" => $product->generic_name,
             "quantity" => $product->quantity,
-            "reorder_level" => $product->generic_name,
+            "has_expiry" => $product->has_expiry,
+            "reorder_level" => $product->reorder_level,
             "supplier" => $product->supplier ? $product->supplier->name : NULL,
             "manufacturer" => $product->manufacturer ? $product->manufacturer->name : NULL,
             "shelf" => $product->shelf ? $product->shelf->name : NULL,
-            "images" => $images
+            "images" => $images,
+            "media" => $media,
           ];
         });
 
@@ -73,22 +83,17 @@ class ProductController extends Controller
       $product = Product::create([
         "brand_name" => $validated->brand_name,
         "generic_name" => $validated->generic_name,
-        //"purchased_date" => $request->purchased_date ?: NULL,
-        //"expiry_date" => $request->expiry_date ?: NULL,
-        //"quantity" => $validated->quantity,
         "reorder_level" => $validated->reorder_level,
-        //"selling_price" => $validated->selling_price,
-        //"cost_price" => $validated->cost_price,
-        "shelf_id" => $validated->shelf,
-        "supplier_id" => $validated->supplier ?: NULL,
-        "manufacturer_id" => $validated->manufacturer ?: NULL,
-        "product_type_id" => $validated->product_type ?: NULL,
-        "description" => $validated->description ?: NULL,
-        "side_effects" => $validated->side_effects ?: NULL,
-        "barcode" => $validated->barcode ?: NULL,
-        "product_number" => $validated->product_number ?: NULL,
-        //"discount" => $request->input('discount') ?: 0,
-        "slug" => Str::slug($validated->generic_name)
+        "shelf_id" => $request->shelf ?: NULL,
+        "has_expiry" => $request->has_expiry ?: 0,
+        "supplier_id" => $request->supplier ?: NULL,
+        "manufacturer_id" => $request->manufacturer ?: NULL,
+        "product_type_id" => $request->product_type ?: NULL,
+        "description" => $request->description ?: NULL,
+        "side_effects" => $request->side_effects ?: NULL,
+        "barcode" => $request->barcode ?: NULL,
+        "product_number" => $request->product_number ?: NULL,
+        "slug" => Str::slug($request->generic_name)
       ]);
 
       if ($product) {
@@ -99,10 +104,6 @@ class ProductController extends Controller
           foreach ($request->file('images') as $image) {
             $product->addMedia($image)->toMediaCollection('images');
           }
-          /*$product->addMultipleMediaFromRequest($request->file("images"))
-            ->each(function ($file) {
-              $file->toMediaCollection("images");
-            });*/
         }
         DB::commit();
         // TODO: Fire event for websocket
@@ -128,12 +129,20 @@ class ProductController extends Controller
       $product = Product::with("manufacturer")
         ->with("supplier")
         ->with("shelf")
-        ->with("media")
         ->with("categories")
         ->where("mask", $mask)
         ->firstOrFail();
 
-//      $product = Product::with("productCategory")->where("mask", $mask)->firstOrFail();
+      $images = ($product->media->map(function($file) {
+        return [
+          "file_id" => $file->id,
+          "url" => $file->getFullUrl(),
+          "file_name" => $file->file_name,
+        ];
+      }));
+
+      $product->setAttribute("images", $images);
+      unset($product->media);
 
       return $this->dataResponse($product);
     } catch (Exception $e) {
@@ -152,27 +161,22 @@ class ProductController extends Controller
   {
     try {
       $product = Product::where("mask", $mask)->firstOrFail();
-      $media = $product->getMedia();
       $validated = (object)$request->validationData();
       DB::beginTransaction();
 
       $updated = $product->update([
         "brand_name" => $validated->brand_name,
         "generic_name" => $validated->generic_name,
-        "purchased_date" => $validated->purchased_date,
-        "expiry_date" => $validated->expiry_date,
-        //"quantity" => $validated->quantity,
         "reorder_level" => $validated->reorder_level,
-        //"selling_price" => $validated->selling_price,
-        //"cost_price" => $validated->cost_price,
-        "shelf_id" => $validated->shelf,
-        "supplier_id" => $validated->supplier,
-        "manufacturer_id" => $validated->manufacturer,
-        "description" => $validated->description ?: NULL,
-        "side_effects" => $validated->side_effects ?: NULL,
-        "barcode" => $validated->barcode ?: NULL,
-        "product_number" => $validated->product_number ?: NULL,
-        "discount" => $validated->discount ?: NULL,
+        "shelf_id" => $request->shelf ?: NULL,
+        "has_expiry" => $request->has_expiry ?: 0,
+        "supplier_id" => $request->supplier ?: NULL,
+        "manufacturer_id" => $request->manufacturer ?: NULL,
+        "product_type_id" => $request->product_type ?: NULL,
+        "description" => $request->description ?: NULL,
+        "side_effects" => $request->side_effects ?: NULL,
+        "barcode" => $request->barcode ?: NULL,
+        "product_number" => $request->product_number ?: NULL,
         "slug" => Str::slug($validated->generic_name)
       ]);
 
@@ -182,14 +186,15 @@ class ProductController extends Controller
 
         // Upload files of any
         if ($request->hasFile("images")) {
-          $uploaded = $product->addMultipleMediaFromRequest($request->file("images"))
-            ->each(function ($file) {
-              $file->toMediaCollection("images");
-            });
-          dd($uploaded);
+          foreach ($request->file('images') as $image) {
+            $product->addMedia($image)->toMediaCollection('images');
+          }
         }
 
+        DB::commit();
         // TODO: Fire event for websocket
+        $product = $product->with("categories")->with("media")->first();
+        return $this->successDataResponse($product, "Product updated successfully");
       }
       DB::rollBack();
       return $this->errorResponse("An error occurred while updating this product");
@@ -209,5 +214,112 @@ class ProductController extends Controller
   public function destroy(string $mask): JsonResponse
   {
     //
+  }
+
+
+  /**
+   * @param Request $request
+   * @return JsonResponse
+   */
+  public function search(Request $request): JsonResponse
+  {
+    try {
+      $query = trim(strtolower($request->input("search_term") ?: ""));
+      if ($query) {
+        $results = Product::with("supplier")
+          ->with("manufacturer")
+          ->with("categories")
+          ->with("media")
+          ->with("type")->get()
+          ->map(function($product) {
+
+            return [
+              "id" => $product->id,
+              "generic_name" => $product->generic_name,
+              "brand_name" => $product->brand_name,
+              "mask" => $product->mask,
+              "supplier" => $product->supplier ? $product->supplier->name : NULL,
+              "manufacturer" => $product->manufacturer ? $product->manufacturer->name : NULL,
+              "type" => $product->type ? $product->type->name : NULL,
+              "quantity" => $product->quantity,
+              "selling_price" => $product->selling_price,
+              "categories" => $product->categories->isNotEmpty() ? $product->categories->map(function ($cat) {
+                return $cat->name;
+              }) : [],
+              "media" => $product->media->isNotEmpty() ? $product->media->map(function ($file) {
+                return $file->getFullUrl();
+              }) : [],
+            ];
+          });
+
+        $fuse = new Fuse($results->toArray(), [
+          "keys" => [
+            "generic_name",
+            "brand_name",
+            "supplier",
+            "manufacturer",
+            "type",
+          ]
+        ]);
+        return $this->dataResponse($fuse->search($query));
+      }
+      return $this->dataResponse([]);
+
+    }
+    catch (Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
+  }
+
+  public function batch(string $mask): JsonResponse
+  {
+    try {
+      $product = Product::with("purchaseItems")
+        ->with("manufacturer")
+        ->with("categories")
+        ->with("media")
+        ->with("type")
+        ->where("mask", $mask)
+        ->firstOrFail();
+
+      $purchaseItems = $product->purchaseItems->isNotEmpty() ? $product->purchaseItems->map(function ($item) {
+        $quantityLeft = (float)$item->quantity - (float)$item->sold_quantity;
+        $item->setAttribute("purchase", $item->purchase);
+        $item->setAttribute("quantity_left", $quantityLeft);
+        return $item;
+      }) : [];
+
+      $items = [];
+      foreach ($purchaseItems as $item) {
+        if ($item->quantity_left > 0) {
+          $items[] = $item;
+        }
+      }
+
+      return $this->dataResponse([
+        "id" => $product->id,
+        "generic_name" => $product->generic_name,
+        "brand_name" => $product->brand_name,
+        "mask" => $product->mask,
+        "supplier" => $product->supplier ? $product->supplier->name : NULL,
+        "manufacturer" => $product->manufacturer ? $product->manufacturer->name : NULL,
+        "type" => $product->type ? $product->type->name : NULL,
+        "quantity" => $product->quantity,
+        "selling_price" => $product->selling_price,
+        "categories" => $product->categories->isNotEmpty() ? $product->categories->map(function ($cat) {
+          return $cat->name;
+        }) : [],
+        "media" => $product->media->isNotEmpty() ? $product->media->map(function ($file) {
+          return $file->getFullUrl();
+        }) : [],
+        "purchase_items" => $items,
+      ]);
+    }
+    catch (ModelNotFoundException $e) {
+      return $this->notFoundResponse();
+    }
+    catch (Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
   }
 }

@@ -18,7 +18,8 @@ class SupplierController extends Controller
   public function index(Request $request): JsonResponse
   {
     try {
-      return $this->dataResponse(Supplier::orderBy("id", "DESC")->get());
+      $suppliers = Supplier::with("products")->orderBy("id", "DESC")->get();
+      return $this->dataResponse($suppliers);
     } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
     }
@@ -82,5 +83,19 @@ class SupplierController extends Controller
   public function destroy(): JsonResponse
   {
 
+  }
+
+  public function products(int $supplierId): JsonResponse
+  {
+    try {
+      $supplier = Supplier::with("products")->findOrFail($supplierId);
+      return $this->dataResponse($supplier);
+    }
+    catch (ModelNotFoundException $e) {
+      return $this->notFoundResponse();
+    }
+    catch (Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
   }
 }
