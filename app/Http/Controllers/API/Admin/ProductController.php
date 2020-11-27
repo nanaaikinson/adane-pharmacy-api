@@ -299,8 +299,13 @@ class ProductController extends Controller
           return $file->getFullUrl();
         }) : [],
         "purchase_items" => $product->purchaseItems->isNotEmpty() ? $product->purchaseItems->map(function ($item) {
-          $item->setAttribute("purchase", $item->purchase);
-          return $item;
+          $quantityLeft = (float)$item->quantity - (float)$item->sold_quantity;
+
+          if ($quantityLeft > 0) {
+            $item->setAttribute("purchase", $item->purchase);
+            $item->setAttribute("quantity_left", $quantityLeft);
+            return $item;
+          }
         }) : [],
       ]);
     }
