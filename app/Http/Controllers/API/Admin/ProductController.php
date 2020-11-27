@@ -288,7 +288,13 @@ class ProductController extends Controller
         $item->setAttribute("quantity_left", $quantityLeft);
         return $item;
       }) : [];
-      $purchaseItems = array_filter($purchaseItems, function($value) { return !is_null($value) && $value !== ''; });
+      
+      $items = [];
+      foreach ($purchaseItems as $item) {
+        if ($item) {
+          $items[] = $item;
+        }
+      }
 
       return $this->dataResponse([
         "id" => $product->id,
@@ -306,7 +312,7 @@ class ProductController extends Controller
         "media" => $product->media->isNotEmpty() ? $product->media->map(function ($file) {
           return $file->getFullUrl();
         }) : [],
-        "purchase_items" => $purchaseItems,
+        "purchase_items" => $items,
       ]);
     }
     catch (ModelNotFoundException $e) {
