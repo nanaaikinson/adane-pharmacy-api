@@ -282,6 +282,14 @@ class ProductController extends Controller
         ->where("mask", $mask)
         ->firstOrFail();
 
+      $purchaseItems = $product->purchaseItems->isNotEmpty() ? $product->purchaseItems->map(function ($item) {
+        $quantityLeft = (float)$item->quantity - (float)$item->sold_quantity;
+        $item->setAttribute("purchase", $item->purchase);
+        $item->setAttribute("quantity_left", $quantityLeft);
+        return $item;
+      }) : [];
+      $purchaseItems = array_filter($purchaseItems, function($value) { return !is_null($value) && $value !== ''; });
+
       return $this->dataResponse([
         "id" => $product->id,
         "generic_name" => $product->generic_name,
@@ -298,15 +306,7 @@ class ProductController extends Controller
         "media" => $product->media->isNotEmpty() ? $product->media->map(function ($file) {
           return $file->getFullUrl();
         }) : [],
-        "purchase_items" => $product->purchaseItems->isNotEmpty() ? $product->purchaseItems->map(function ($item) {
-          $quantityLeft = (float)$item->quantity - (float)$item->sold_quantity;
-
-          if ($quantityLeft > 0) {
-            $item->setAttribute("purchase", $item->purchase);
-            $item->setAttribute("quantity_left", $quantityLeft);
-            return $item;
-          }
-        }) : [],
+        "purchase_items" => $purchaseItems,
       ]);
     }
     catch (ModelNotFoundException $e) {
