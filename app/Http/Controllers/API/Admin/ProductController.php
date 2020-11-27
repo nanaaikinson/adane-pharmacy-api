@@ -288,10 +288,10 @@ class ProductController extends Controller
         $item->setAttribute("quantity_left", $quantityLeft);
         return $item;
       }) : [];
-      
+
       $items = [];
       foreach ($purchaseItems as $item) {
-        if ($item) {
+        if ($item->quantity_left > 0) {
           $items[] = $item;
         }
       }
