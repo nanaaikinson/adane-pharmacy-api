@@ -18,7 +18,7 @@ class CustomerController extends Controller
   public function index(): JsonResponse
   {
     try {
-      $customers = Customer::all();
+      $customers = Customer::orderBy("id", "DESC")->get();
       return $this->dataResponse($customers);
     }
     catch (Exception $e) {
