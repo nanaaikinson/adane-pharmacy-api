@@ -37,6 +37,7 @@ class CustomerController extends Controller
         "height" => $request->input("height") ?: NULL,
         "weight" => $request->input("weight") ?: NULL,
         "date_of_birth" => $request->input("date_of_birth") ?: NULL,
+        "address" => $request->input("address") ?: NULL,
         "allergies" => $request->input("allergies") ?: NULL,
         "others" => $request->input("others"),
         "mask" => Mask::integer(),
@@ -78,6 +79,7 @@ class CustomerController extends Controller
         "height" => $request->input("height") ?: NULL,
         "weight" => $request->input("weight") ?: NULL,
         "date_of_birth" => $request->input("date_of_birth") ?: NULL,
+        "address" => $request->input("address") ?: NULL,
         "allergies" => $request->input("allergies") ?: NULL,
         "others" => $request->input("others"),
       ]);
