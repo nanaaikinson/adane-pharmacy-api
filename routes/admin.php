@@ -2,19 +2,34 @@
 
 use App\Http\Controllers\API\Admin\AuthController;
 use App\Http\Controllers\API\Admin\CategoryController;
+use App\Http\Controllers\API\Admin\CustomerController;
 use App\Http\Controllers\API\Admin\FileController;
 use App\Http\Controllers\API\Admin\ManufacturerController;
 use App\Http\Controllers\API\Admin\ProductController;
 use App\Http\Controllers\API\Admin\ProductTypeController;
 use App\Http\Controllers\API\Admin\PurchaseController;
+use App\Http\Controllers\API\Admin\SalesController;
 use App\Http\Controllers\API\Admin\ShelfController;
 use App\Http\Controllers\API\Admin\StockController;
 use App\Http\Controllers\API\Admin\SupplierController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('json.response')->group(function() {
-  Route::prefix("auth")->group(function() {
+Route::middleware('json.response')->group(function () {
+  Route::prefix("auth")->group(function () {
     Route::post("/login", [AuthController::class, "login"]);
+  });
+
+  Route::prefix("/customers")->group(function() {
+    Route::get("/", [CustomerController::class, "index"]);
+    Route::post("/", [CustomerController::class, "store"]);
+    Route::get("/{mask}", [CustomerController::class, "show"]);
+    Route::put("/{mask}", [CustomerController::class, "update"]);
+  });
+
+  Route::prefix("/orders")->group(function() {
+    Route::get("/", [SalesController::class, "index"]);
+    Route::post("/buy", [SalesController::class, "order"]);
+
   });
 
   Route::get("/suppliers/products/{supplierId}", [SupplierController::class, 'products']);
