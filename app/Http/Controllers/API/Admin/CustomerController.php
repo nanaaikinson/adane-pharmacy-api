@@ -44,7 +44,7 @@ class CustomerController extends Controller
       ]);
 
       if ($customer) {
-        return $this->successResponse("Customer created successfully");
+        return $this->successDataResponse($customer, "Customer created successfully");
       }
       return $this->errorResponse("An error occurred while saving this record");
     }
@@ -85,7 +85,7 @@ class CustomerController extends Controller
       ]);
 
       if ($updated) {
-        return $this->successResponse("Customer updated successfully");
+        return $this->successDataResponse($customer, "Customer updated successfully");
       }
 
       return $this->errorResponse("An error occurred while updating this customer");
