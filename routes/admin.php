@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\Admin\AuthController;
 use App\Http\Controllers\API\Admin\CategoryController;
 use App\Http\Controllers\API\Admin\CustomerController;
+use App\Http\Controllers\API\Admin\UserController;
 use App\Http\Controllers\API\Admin\FileController;
 use App\Http\Controllers\API\Admin\ManufacturerController;
 use App\Http\Controllers\API\Admin\ProductController;
@@ -24,6 +25,13 @@ Route::middleware('json.response')->group(function () {
     Route::post("/", [CustomerController::class, "store"]);
     Route::get("/{mask}", [CustomerController::class, "show"]);
     Route::put("/{mask}", [CustomerController::class, "update"]);
+  });
+
+  Route::prefix("/users")->group(function() {
+    Route::get("/", [UserController::class, "index"]);
+    Route::post("/", [UserController::class, "store"]);
+    Route::get("/{mask}", [UserController::class, "show"]);
+    Route::put("/{mask}", [UserController::class, "update"]);
   });
 
   Route::prefix("/orders")->group(function() {
