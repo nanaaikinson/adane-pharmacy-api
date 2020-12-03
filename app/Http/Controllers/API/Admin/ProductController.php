@@ -37,7 +37,7 @@ class ProductController extends Controller
         ->get()->map(function ($product) {
 
           $images = $product->media->isNotEmpty() ? $product->media[0]->getFullUrl() : NULL;
-          $media = ($product->media->map(function($file) {
+          $media = ($product->media->map(function ($file) {
             return [
               "file_id" => $file->id,
               "url" => $file->getFullUrl(),
@@ -133,7 +133,7 @@ class ProductController extends Controller
         ->where("mask", $mask)
         ->firstOrFail();
 
-      $images = ($product->media->map(function($file) {
+      $images = ($product->media->map(function ($file) {
         return [
           "file_id" => $file->id,
           "url" => $file->getFullUrl(),
@@ -231,7 +231,7 @@ class ProductController extends Controller
           ->with("categories")
           ->with("media")
           ->with("type")->get()
-          ->map(function($product) {
+          ->map(function ($product) {
 
             return [
               "id" => $product->id,
@@ -265,8 +265,7 @@ class ProductController extends Controller
       }
       return $this->dataResponse([]);
 
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
     }
   }
@@ -314,11 +313,47 @@ class ProductController extends Controller
         }) : [],
         "purchase_items" => $items,
       ]);
-    }
-    catch (ModelNotFoundException $e) {
+    } catch (ModelNotFoundException $e) {
       return $this->notFoundResponse();
+    } catch (Exception $e) {
+      return $this->errorResponse($e->getMessage());
     }
-    catch (Exception $e) {
+  }
+
+  public function stock(): JsonResponse
+  {
+    try {
+      $products = Product::with("categories")
+        ->with("media")
+        ->with("type")
+        ->with("supplier")
+        ->with("orderItems")
+        ->get()->map(function ($product) {
+          $categories = $product->categories->isNotEmpty() ? $product->categories->map(function ($category) {
+            return $category->name;
+          }) : NULL;
+          $quantity = $product->quantity;
+          $image = $product->media->isNotEmpty() ? $product->media[0]->getFullUrl() : NULL;
+
+          return [
+            "id" => $product->id,
+            "generic_name" => $product->generic_name,
+            "brand_name" => $product->brand_name,
+            "supplier" => $product->supplier ? $product->supplier->name : NULL,
+            "type" => $product->type ? $product->type->name : NULL,
+            "selling_price" => $product->selling_price,
+            "quantity" => (int)$quantity,
+            "categories" => $categories,
+            "reorder_level" => $product->reorder_level,
+            "status" => $quantity < 1 ? "Out of stock" : ($quantity <= $product->reorder_level ? "Needs Reorder" : "In stock"),
+            "sold_quantity" => $product->orderItems->isNotEmpty() ? $product->orderItems : 0,
+            "mask" => $product->mask,
+            "image" => $image
+          ];
+        });
+
+      return $this->dataResponse($products);
+    } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
     }
   }

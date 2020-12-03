@@ -37,13 +37,14 @@ class CustomerController extends Controller
         "height" => $request->input("height") ?: NULL,
         "weight" => $request->input("weight") ?: NULL,
         "date_of_birth" => $request->input("date_of_birth") ?: NULL,
+        "address" => $request->input("address") ?: NULL,
         "allergies" => $request->input("allergies") ?: NULL,
         "others" => $request->input("others"),
         "mask" => Mask::integer(),
       ]);
 
       if ($customer) {
-        return $this->successResponse("Customer created successfully");
+        return $this->successDataResponse($customer, "Customer created successfully");
       }
       return $this->errorResponse("An error occurred while saving this record");
     }
@@ -78,12 +79,13 @@ class CustomerController extends Controller
         "height" => $request->input("height") ?: NULL,
         "weight" => $request->input("weight") ?: NULL,
         "date_of_birth" => $request->input("date_of_birth") ?: NULL,
+        "address" => $request->input("address") ?: NULL,
         "allergies" => $request->input("allergies") ?: NULL,
         "others" => $request->input("others"),
       ]);
 
       if ($updated) {
-        return $this->successResponse("Customer updated successfully");
+        return $this->successDataResponse($customer, "Customer updated successfully");
       }
 
       return $this->errorResponse("An error occurred while updating this customer");
