@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Permission;
 use App\Models\Role;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\JsonResponse;
@@ -16,7 +17,7 @@ class RoleController extends Controller
   public function index(): JsonResponse
   {
     try {
-      $roles = Role::orderBy("id", "DESC")->get();
+      $roles = Role::where("id", "<>", "1")->orderBy("id", "DESC")->get();
       return $this->dataResponse($roles);
     }
     catch (Exception $e) {
@@ -46,5 +47,10 @@ class RoleController extends Controller
   public function destroy($id)
   {
     //
+  }
+
+  public function permissions(): JsonResponse
+  {
+    return $this->dataResponse(Permission::select("id", "display_name")->get());
   }
 }

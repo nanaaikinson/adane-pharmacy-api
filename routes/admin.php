@@ -8,6 +8,7 @@ use App\Http\Controllers\API\Admin\ManufacturerController;
 use App\Http\Controllers\API\Admin\ProductController;
 use App\Http\Controllers\API\Admin\ProductTypeController;
 use App\Http\Controllers\API\Admin\PurchaseController;
+use App\Http\Controllers\API\Admin\RoleController;
 use App\Http\Controllers\API\Admin\SalesController;
 use App\Http\Controllers\API\Admin\ShelfController;
 use App\Http\Controllers\API\Admin\SupplierController;
@@ -22,8 +23,6 @@ Route::middleware('json.response')->group(function () {
 
   // Customers
   Route::prefix("customers")->group(function () {
-    Route::get("/read-only", [CustomerController::class, "index"]);
-
     Route::get("/", [CustomerController::class, "index"])->middleware("permission:read-customer,guard:admin");
     Route::post("/", [CustomerController::class, "store"])->middleware("permission:create-customer,guard:admin");
     Route::get("/{mask}", [CustomerController::class, "show"])->middleware("permission:read-customer,guard:admin");
@@ -49,8 +48,6 @@ Route::middleware('json.response')->group(function () {
   });
 
   // Settings
-  Route::get("/suppliers/products/{supplierId}", [SupplierController::class, 'products']);
-
   Route::middleware("permission:read-role,guard:admin")->group(function () {
     Route::apiResource("suppliers", SupplierController::class);
 
@@ -87,4 +84,19 @@ Route::middleware('json.response')->group(function () {
 
   // Files
   Route::delete("/files/delete/{fileId}", [FileController::class, "destroy"]);
+
+  // Read Only
+  Route::prefix("read-only")->group(function() {
+    Route::get("suppliers/products/{supplierId}", [SupplierController::class, 'products']);
+
+    Route::get("categories", [CategoryController::class, "index"]);
+    Route::get("suppliers", [SupplierController::class, "index"]);
+    Route::get("shelves", [ShelfController::class, "index"]);
+    Route::get("manufacturers", [ManufacturerController::class, "index"]);
+    Route::get("products", [ProductController::class, "index"]);
+    Route::get("product-types", [ProductTypeController::class, "index"]);
+    Route::get("customers", [CustomerController::class, "index"]);
+    Route::get("roles", [RoleController::class, "index"]);
+    Route::get("permissions", [RoleController::class, "permissions"]);
+  });
 });
