@@ -20,6 +20,7 @@ class RunUsersSeed extends Migration
     $user->username = "nanaaikinson24";
     $user->password = bcrypt("12345678");
     $user->mask = Mask::integer();
+    $user->role_id = 1;
     $user->save();
 
     $user->attachRole(1);
@@ -31,6 +32,7 @@ class RunUsersSeed extends Migration
     $user->username = "adminadane";
     $user->password = bcrypt("password");
     $user->mask = Mask::integer();
+    $user->role_id = 2;
     $user->save();
 
     $user->attachRole(2);
