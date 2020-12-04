@@ -18,7 +18,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('json.response')->group(function () {
   Route::prefix("auth")->group(function () {
     Route::post("/login", [AuthController::class, "login"]);
+    Route::post("/reset-password", [AuthController::class, "resetPassword"]);
     Route::post("/logout", [AuthController::class, "logout"])->middleware("auth:admin");
+    Route::get("/user", [AuthController::class, "user"])->middleware("auth:admin");
   });
 
   // Customers
