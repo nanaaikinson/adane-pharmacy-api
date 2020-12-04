@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Functions\Mask;
+use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Database\Seeder;
 
@@ -15,21 +16,27 @@ class RoleSeeder extends Seeder
    */
   public function run()
   {
-    Role::create([
+    $permissions = Permission::select("id")->get()->toArray();
+
+    $developer = Role::create([
       "name" => "developer",
-      "display-name" => "Developer",
+      "display_name" => "Developer",
       "mask" => Mask::integer()
     ]);
 
-    Role::create([
+    $developer->attachPermissions($permissions);
+
+    $admin = Role::create([
       "name" => "admin",
-      "display-name" => "Admin",
+      "display_name" => "Admin",
       "mask" => Mask::integer()
     ]);
+
+    $admin->attachPermissions($permissions);
 
     Role::create([
       "name" => "dispenser",
-      "display-name" => "Dispenser",
+      "display_name" => "Dispenser",
       "mask" => Mask::integer()
     ]);
   }

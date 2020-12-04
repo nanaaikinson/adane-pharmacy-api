@@ -1,19 +1,22 @@
 <?php
 
-namespace Database\Seeders;
-
+use App\Functions\Mask;
 use App\Models\Permission;
-use Illuminate\Database\Seeder;
+use App\Models\Role;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class PermissionSeeder extends Seeder
+class RunRoleAndPermissionsSeed extends Migration
 {
   /**
-   * Run the database seeds.
+   * Run the migrations.
    *
    * @return void
    */
-  public function run()
+  public function up()
   {
+    // Run permissions
     // Roles
     Permission::insert([
       [
@@ -129,5 +132,41 @@ class PermissionSeeder extends Seeder
         "created_at" => gmdate("Y-m-d H:i:s"), "updated_at" => gmdate("Y-m-d H:i:s")
       ],
     ]);
+
+
+    // Run roles
+    $permissions = Permission::select("id")->get()->toArray();
+
+    $developer = Role::create([
+      "name" => "developer",
+      "display_name" => "Developer",
+      "mask" => Mask::integer()
+    ]);
+
+    $developer->attachPermissions($permissions);
+
+    $admin = Role::create([
+      "name" => "admin",
+      "display_name" => "Admin",
+      "mask" => Mask::integer()
+    ]);
+
+    $admin->attachPermissions($permissions);
+
+    Role::create([
+      "name" => "dispenser",
+      "display_name" => "Dispenser",
+      "mask" => Mask::integer()
+    ]);
+  }
+
+  /**
+   * Reverse the migrations.
+   *
+   * @return void
+   */
+  public function down()
+  {
+    //
   }
 }

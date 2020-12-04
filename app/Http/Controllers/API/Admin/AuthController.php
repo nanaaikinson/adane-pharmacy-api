@@ -8,6 +8,7 @@ use App\Traits\ResponseTrait;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 
 class AuthController extends Controller
 {
@@ -36,7 +37,7 @@ class AuthController extends Controller
       if (Auth::check()) {
         $user = Auth::user();
         $token = $user->createToken("Admin Login")->accessToken;
-        $permissions = [];
+        $permissions = $user->allPermissions()->pluck("name");
 
         return $this->dataResponse([
           "name" => $user->name,
@@ -48,5 +49,15 @@ class AuthController extends Controller
     } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
     }
+  }
+
+  public function resetPassword(Request $request)
+  {
+    request()->validate($request->all(), ["username" => "required"]);
+  }
+
+  public function user(Request $request): JsonResponse
+  {
+    return $this->dataResponse($request->user());
   }
 }
