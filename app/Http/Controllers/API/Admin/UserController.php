@@ -36,7 +36,6 @@ class UserController extends Controller
         "email" => $validated->email,
         "username" => $validated->username,
         "password" => bcrypt($validated->password),
-        "role_id" => $validated->role
       ]);
 
       if ($user) {
