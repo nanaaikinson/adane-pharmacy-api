@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laratrust\Traits\LaratrustUserTrait;
@@ -50,5 +51,10 @@ class User extends Authenticatable implements Auditable
   public function getNameAttribute(): string
   {
     return "{$this->first_name} {$this->last_name}";
+  }
+
+  public function role(): BelongsTo
+  {
+    return $this->belongsTo(Role::class);
   }
 }
