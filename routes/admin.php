@@ -42,6 +42,15 @@ Route::middleware('json.response')->group(function () {
       Route::delete("/{mask}", [UserController::class, "destroy"])->middleware("permission:delete-user,guard:admin");
     });
 
+    // Roles
+    Route::prefix("roles")->group(function () {
+      Route::get("/", [RoleController::class, "index"])->middleware("permission:read-role,guard:admin");
+      Route::post("/", [RoleController::class, "store"])->middleware("permission:create-role,guard:admin");
+      Route::get("/{mask}", [RoleController::class, "show"])->middleware("permission:read-role,guard:admin");
+      Route::put("/{mask}", [RoleController::class, "update"])->middleware("permission:update-role,guard:admin");
+      Route::delete("/{mask}", [RoleController::class, "destroy"])->middleware("permission:delete-role,guard:admin");
+    });
+
     // Orders
     Route::prefix("orders")->group(function () {
       Route::middleware("permission:point-of-sale,guard:admin")->group(function () {
