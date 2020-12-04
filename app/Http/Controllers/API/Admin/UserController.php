@@ -20,7 +20,9 @@ class UserController extends Controller
   public function index(): JsonResponse
   {
     try {
-      $users = User::with("role")->orderBy("id", "DESC")->get();
+      $users = User::with("role")
+        ->where("id", "<>", 1)
+        ->orderBy("id", "DESC")->get();
       return $this->dataResponse($users);
     } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
