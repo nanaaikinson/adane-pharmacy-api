@@ -27,7 +27,7 @@ class UpdateUserRequest extends FormRequest
     return [
       "first_name" => "required",
       "last_name" => "required",
-      "email" => "required|unique:users,email",
+      "email" => ["required", Rule::unique("users")->ignore($this->route("mask"), "mask")],
       "username" => ["required", Rule::unique("users")->ignore($this->route("mask"), "mask")],
       "role" => "required|exists:roles,id"
     ];
