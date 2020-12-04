@@ -1,19 +1,17 @@
 <?php
 
-namespace Database\Seeders;
-
 use App\Functions\Mask;
 use App\Models\User;
-use Illuminate\Database\Seeder;
+use Illuminate\Database\Migrations\Migration;
 
-class UserSeeder extends Seeder
+class RunUsersSeed extends Migration
 {
   /**
-   * Run the database seeds.
+   * Run the migrations.
    *
    * @return void
    */
-  public function run()
+  public function up()
   {
     $user = new User();
     $user->first_name = "Nana";
@@ -36,5 +34,15 @@ class UserSeeder extends Seeder
     $user->save();
 
     $user->attachRole(2);
+  }
+
+  /**
+   * Reverse the migrations.
+   *
+   * @return void
+   */
+  public function down()
+  {
+    //
   }
 }

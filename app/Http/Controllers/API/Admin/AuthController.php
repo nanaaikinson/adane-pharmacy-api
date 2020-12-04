@@ -36,7 +36,7 @@ class AuthController extends Controller
       if (Auth::check()) {
         $user = Auth::user();
         $token = $user->createToken("Admin Login")->accessToken;
-        $permissions = [];
+        $permissions = $user->allPermissions()->pluck("name");
 
         return $this->dataResponse([
           "name" => $user->name,
