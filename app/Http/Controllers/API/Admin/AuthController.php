@@ -8,7 +8,7 @@ use App\Traits\ResponseTrait;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
@@ -41,8 +41,11 @@ class AuthController extends Controller
 
         return $this->dataResponse([
           "name" => $user->name,
+          "role" => $user->roles->isNotEmpty() ? ucfirst($user->roles[0]->name) : NULL,
+          "username" => $user->username,
+          "email" => $user->email,
           "permissions" => $permissions,
-          "token" => $token
+          "token" => $token,
         ]);
       }
       return $this->errorResponse("Incorrect credentials provided");
@@ -59,5 +62,20 @@ class AuthController extends Controller
   public function user(Request $request): JsonResponse
   {
     return $this->dataResponse($request->user());
+  }
+
+  /**
+   * Logout current authenticated user
+   *
+   * @authenticated
+   * @param Request $request
+   * @return JsonResponse
+   */
+  public function logout(Request $request): JsonResponse
+  {
+    $user = $request->user()->token();
+    $user->revoke();
+
+    return $this->successResponse("Logout successful");
   }
 }
