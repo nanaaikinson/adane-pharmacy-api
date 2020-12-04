@@ -19,7 +19,7 @@ class UserController extends Controller
   public function index(): JsonResponse
   {
     try {
-      $users = User::orderBy("id", "DESC")->get();
+      $users = User::with("role")->orderBy("id", "DESC")->get();
       return $this->dataResponse($users);
     } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
@@ -36,6 +36,7 @@ class UserController extends Controller
         "email" => $validated->email,
         "username" => $validated->username,
         "password" => bcrypt($validated->password),
+        "role_id" => $validated->role,
       ]);
 
       if ($user) {
