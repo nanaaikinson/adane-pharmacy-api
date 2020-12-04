@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\Admin;
 
+use App\Functions\Mask;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
@@ -37,6 +38,7 @@ class UserController extends Controller
         "username" => $validated->username,
         "password" => bcrypt($validated->password),
         "role_id" => $validated->role,
+        "mask" => Mask::integer(),
       ]);
 
       if ($user) {
