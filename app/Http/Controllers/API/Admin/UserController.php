@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\Admin;
 
+use App\Functions\Mask;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
@@ -19,7 +20,9 @@ class UserController extends Controller
   public function index(): JsonResponse
   {
     try {
-      $users = User::with("role")->orderBy("id", "DESC")->get();
+      $users = User::with("role")
+        ->where("id", "<>", 1)
+        ->orderBy("id", "DESC")->get();
       return $this->dataResponse($users);
     } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
@@ -37,6 +40,7 @@ class UserController extends Controller
         "username" => $validated->username,
         "password" => bcrypt($validated->password),
         "role_id" => $validated->role,
+        "mask" => Mask::integer(),
       ]);
 
       if ($user) {
@@ -79,7 +83,7 @@ class UserController extends Controller
       ]);
 
       if ($user) {
-        $user->syncRoles($validated->role);
+        $user->syncRoles([$validated->role]);
 
         return $this->successDataResponse($user, "User updated successfully");
       }
