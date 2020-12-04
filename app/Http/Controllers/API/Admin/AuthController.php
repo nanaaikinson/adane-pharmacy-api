@@ -56,8 +56,8 @@ class AuthController extends Controller
     request()->validate($request->all(), ["username" => "required"]);
   }
 
-  public function user(Request $request)
+  public function user(Request $request): JsonResponse
   {
-    return $request->user();
+    return $this->dataResponse($request->user());
   }
 }
