@@ -83,7 +83,7 @@ class UserController extends Controller
       ]);
 
       if ($user) {
-        $user->syncRoles($validated->role);
+        $user->syncRoles([$validated->role]);
 
         return $this->successDataResponse($user, "User updated successfully");
       }
