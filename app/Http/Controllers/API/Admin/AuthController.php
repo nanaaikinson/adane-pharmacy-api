@@ -41,8 +41,11 @@ class AuthController extends Controller
 
         return $this->dataResponse([
           "name" => $user->name,
+          "role" => $user->roles->isNotEmpty() ? ucfirst($user->roles[0]->name) : NULL,
+          "username" => $user->username,
+          "email" => $user->email,
           "permissions" => $permissions,
-          "token" => $token
+          "token" => $token,
         ]);
       }
       return $this->errorResponse("Incorrect credentials provided");
