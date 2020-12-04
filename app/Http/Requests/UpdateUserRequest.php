@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -24,11 +24,14 @@ class UpdateUserRequest extends FormRequest
    */
   public function rules()
   {
+    $user = User::where("mask", $this->route("mask"))->first();
+
     return [
       "first_name" => "required",
       "last_name" => "required",
-      "email" => ["required", Rule::unique("users")->ignore($this->route("mask"), "mask")],
-      "username" => ["required", Rule::unique("users")->ignore($this->route("mask"), "mask")],
+      "email" => "required|unique:users,email," . $user->id,
+      "username" => "required|unique:users,username," . $user->id,
+      //"username" => ["required", Rule::unique("users")->ignore($this->route("mask"), "mask")],
       "role" => "required|exists:roles,id"
     ];
   }
