@@ -5,9 +5,11 @@ namespace App\Providers;
 use App\Events\BrandsRealtimeEvent;
 use App\Events\UpdateProductDetailEvent;
 use App\Events\UpdateProductQuantityEvent;
+use App\Events\UpdatePurchaseItemQuantity;
 use App\Listeners\BrandsEmitRealtimeListener;
 use App\Listeners\UpdateProductDetailListener;
 use App\Listeners\UpdateProductQuantityListener;
+use App\Listeners\UpdatePurchaseItemQuantityEventListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -32,6 +34,9 @@ class EventServiceProvider extends ServiceProvider
     UpdateProductDetailEvent::class => [
       UpdateProductDetailListener::class
     ],
+    UpdatePurchaseItemQuantity::class => [
+      UpdatePurchaseItemQuantityEventListener::class
+    ]
   ];
 
   /**

@@ -24,7 +24,9 @@ class StoreOrderRequest extends FormRequest
   public function rules(): array
   {
     return [
-      //
+      "customer_id" => "required|exists:customers,id",
+      "basket" => "required|array",
+      "invoice_number" => "required|unique:orders,invoice_number",
     ];
   }
 }
