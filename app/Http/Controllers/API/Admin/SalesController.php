@@ -36,7 +36,8 @@ class SalesController extends Controller
       $validated = (object)$request->validationData();
       $order = Order::create([
         "user_id" => $request->user()->id,
-        "customer_id" => $validated->customer_id
+        "customer_id" => $validated->customer_id,
+        "invoice_number" => $validated->invoice_number,
       ]);
 
       if ($order) {
