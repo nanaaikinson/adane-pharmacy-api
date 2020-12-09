@@ -37,14 +37,12 @@ class AuthController extends Controller
       if (Auth::check()) {
         $user = Auth::user();
         $token = $user->createToken("Admin Login")->accessToken;
-        $permissions = $user->allPermissions()->pluck("name");
 
         return $this->dataResponse([
           "name" => $user->name,
           "role" => $user->roles->isNotEmpty() ? ucfirst($user->roles[0]->name) : NULL,
           "username" => $user->username,
           "email" => $user->email,
-          "permissions" => $permissions,
           "token" => $token,
         ]);
       }
@@ -61,7 +59,11 @@ class AuthController extends Controller
 
   public function user(Request $request): JsonResponse
   {
-    return $this->dataResponse($request->user());
+    $user = $request->user();
+    $permissions = $user->allPermissions()->pluck("name");
+    $user->setAttribute("permissions", $permissions);
+
+    return $this->dataResponse($user);
   }
 
   /**
