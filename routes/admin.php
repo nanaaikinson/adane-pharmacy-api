@@ -65,7 +65,7 @@ Route::middleware('json.response')->group(function () {
     });
 
     // Settings
-    Route::middleware("permission:read-role,guard:admin")->group(function () {
+    Route::middleware("permission:settings,guard:admin")->group(function () {
       Route::apiResource("suppliers", SupplierController::class);
 
       Route::apiResource("categories", CategoryController::class);
