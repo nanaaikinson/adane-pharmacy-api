@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\Admin\AuthController;
 use App\Http\Controllers\API\Admin\CategoryController;
 use App\Http\Controllers\API\Admin\CustomerController;
+use App\Http\Controllers\API\Admin\DashboardController;
 use App\Http\Controllers\API\Admin\FileController;
 use App\Http\Controllers\API\Admin\ManufacturerController;
 use App\Http\Controllers\API\Admin\ProductController;
@@ -16,6 +17,10 @@ use App\Http\Controllers\API\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('json.response')->group(function () {
+  Route::post("/send-email", function () {
+    dispatch(new \App\Jobs\SendEmailJob(["name" => "Nana Aikinson"], "product.expired"));
+  });
+
   Route::prefix("auth")->group(function () {
     Route::post("/login", [AuthController::class, "login"]);
     Route::post("/reset-password", [AuthController::class, "resetPassword"]);
@@ -111,5 +116,8 @@ Route::middleware('json.response')->group(function () {
       Route::get("roles", [RoleController::class, "index"]);
       Route::get("permissions", [RoleController::class, "permissions"]);
     });
+
+    // Dashboard
+    Route::get("/dashboard", [DashboardController::class, "index"]);
   });
 });
