@@ -202,7 +202,25 @@ class PurchaseController extends Controller
 
   public function destroy(string $mask): JsonResponse
   {
-
+    DB::beginTransaction();
+    try {
+      $purchase = Purchase::where("mask", $mask)->firstOrFail();
+      if ($purchase->delete()) {
+        $purchase->items()->delete();
+        
+        DB::commit();
+        return $this->successResponse("Purchase deleted successfully");
+      }
+      DB::rollBack();
+      return $this->errorResponse("An error occurred while deleting this purchase");
+    }
+    catch (ModelNotFoundException $e) {
+      return $this->notFoundResponse();
+    }
+    catch (Exception $e) {
+      DB::rollBack();
+      return $this->errorResponse($e->getMessage());
+    }
   }
 
   /**

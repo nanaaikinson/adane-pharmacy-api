@@ -213,7 +213,25 @@ class ProductController extends Controller
    */
   public function destroy(string $mask): JsonResponse
   {
-    //
+    DB::beginTransaction();
+    try {
+      $product = Product::where("mask", $mask)->firstOrFail();
+      if ($product->delete()) {
+        $product->productCategory()->delete();
+        $product->media()->delete();
+        $product->purchaseItems()->delete();
+
+        DB::commit();
+        return $this->successResponse("Product deleted successfully");
+      }
+      return $this->errorResponse("An error occurred while deleting this product");
+    }
+    catch (ModelNotFoundException $e) {
+      return $this->notFoundResponse();
+    }
+    catch (Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
   }
 
 
@@ -354,6 +372,47 @@ class ProductController extends Controller
 
       return $this->dataResponse($products);
     } catch (Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
+  }
+
+  public function details(string $mask): JsonResponse
+  {
+    try {
+      $product = Product::with("");
+    }
+    catch (ModelNotFoundException $e) {
+      return $this->notFoundResponse();
+    }
+    catch (Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
+  }
+
+  public function purchases(string $mask): JsonResponse
+  {
+    try {
+      $product = Product::with("purchaseItems")->where("mask", $mask)->firstOrFail();
+
+      return $this->dataResponse($product);
+    }
+    catch (ModelNotFoundException $e) {
+      return $this->notFoundResponse();
+    }
+    catch (Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
+  }
+
+  public function sales()
+  {
+    try {
+      $product = Product::with("");
+    }
+    catch (ModelNotFoundException $e) {
+      return $this->notFoundResponse();
+    }
+    catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
     }
   }

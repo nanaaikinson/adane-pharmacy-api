@@ -8,35 +8,35 @@ use Laravel\Horizon\HorizonApplicationServiceProvider;
 
 class HorizonServiceProvider extends HorizonApplicationServiceProvider
 {
-    /**
-     * Bootstrap any application services.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        parent::boot();
+  /**
+   * Bootstrap any application services.
+   *
+   * @return void
+   */
+  public function boot()
+  {
+    parent::boot();
 
-        // Horizon::routeSmsNotificationsTo('15556667777');
-         Horizon::routeMailNotificationsTo('nanaaikinson24@gmail.com');
-         Horizon::routeSlackNotificationsTo('aikintech.slack.com', '#forge-deployments');
+    // Horizon::routeSmsNotificationsTo('15556667777');
+    Horizon::routeMailNotificationsTo('nanaaikinson24@gmail.com');
+    Horizon::routeSlackNotificationsTo('aikintech.slack.com', '#forge-deployment');
 
-        // Horizon::night();
-    }
+    // Horizon::night();
+  }
 
-    /**
-     * Register the Horizon gate.
-     *
-     * This gate determines who can access Horizon in non-local environments.
-     *
-     * @return void
-     */
-    protected function gate()
-    {
-//        Gate::define('viewHorizon', function ($user) {
-//            return in_array($user->email, [
-//                //
-//            ]);
-//        });
-    }
+  /**
+   * Register the Horizon gate.
+   *
+   * This gate determines who can access Horizon in non-local environments.
+   *
+   * @return void
+   */
+  protected function gate()
+  {
+    /*Gate::define('viewHorizon', function ($user) {
+      return in_array($user->email, [
+        //
+      ]);
+    });*/
+  }
 }
