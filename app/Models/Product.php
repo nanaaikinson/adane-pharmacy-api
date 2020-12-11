@@ -99,4 +99,10 @@ class Product extends Model implements Auditable, HasMedia
   {
     return $this->hasMany(PurchaseItem::class);
   }
+
+  public function purchases(): BelongsToMany
+  {
+    return $this->belongsToMany(Purchase::class, PurchaseItem::class)
+      ->withPivot("cost_price", "selling_price", "quantity", "expiry_date", "product_id", "purchase_id", "id");
+  }
 }

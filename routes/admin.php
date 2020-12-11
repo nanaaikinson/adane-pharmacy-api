@@ -81,11 +81,14 @@ Route::middleware('json.response')->group(function () {
       Route::get("/search", [ProductController::class, 'search']);
       Route::post("/{mask}/update", [ProductController::class, 'update']);
       Route::get("/{mask}/batch", [ProductController::class, 'batch']);
+      Route::get("/{mask}/purchases", [ProductController::class, 'purchases']);
+      Route::get("/{mask}/sales", [ProductController::class, 'sales']);
 
       Route::get("/", [ProductController::class, "index"]);
       Route::post("/", [ProductController::class, "store"]);
       Route::get("/{mask}", [ProductController::class, "show"]);
       Route::put("/{mask}", [ProductController::class, "update"]);
+      Route::delete("/{mask}", [ProductController::class, "destroy"]);
     });
 
     // Purchases
