@@ -27,8 +27,13 @@ class ProductSaleMail extends Mailable
    *
    * @return $this
    */
-  public function build()
+  public function build(): ProductSaleMail
   {
-    return $this->view('view.name');
+    return $this->from("sales@adanechemistltd.com", "Sales")
+      ->subject("Product(s) Order")
+      ->view('emails.product.sale')
+      ->with([
+        "data" => $this->data
+      ]);
   }
 }
