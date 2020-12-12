@@ -100,6 +100,7 @@ Route::middleware('json.response')->group(function () {
       Route::post("/", [PurchaseController::class, "store"]);
       Route::get("/{mask}", [PurchaseController::class, "show"]);
       Route::put("/{mask}", [PurchaseController::class, "update"]);
+      Route::delete("/{mask}", [PurchaseController::class, "destroy"]);
     });
 
     // Files

@@ -207,7 +207,7 @@ class PurchaseController extends Controller
       $purchase = Purchase::where("mask", $mask)->firstOrFail();
       if ($purchase->delete()) {
         $purchase->items()->delete();
-        
+
         DB::commit();
         return $this->successResponse("Purchase deleted successfully");
       }
