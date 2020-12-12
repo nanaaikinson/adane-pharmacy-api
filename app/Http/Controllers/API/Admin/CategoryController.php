@@ -70,9 +70,19 @@ class CategoryController extends Controller
     }
   }
 
-  public function destroy(string $mask)
+  public function destroy(string $mask): JsonResponse
   {
-
+    try {
+      $shelf = Category::where("mask", $mask)->firstOrFail();
+      $shelf->delete();
+      return $this->successResponse("Category deleted successfully.");
+    }
+    catch (ModelNotFoundException $e) {
+      return $this->notFoundResponse();
+    }
+    catch (Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
   }
 
 }
