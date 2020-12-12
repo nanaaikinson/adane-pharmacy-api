@@ -7,6 +7,7 @@ use App\Events\UpdatePurchaseItemQuantity;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrderRequest;
 use App\Jobs\SendEmailJob;
+use App\Mail\ProductSaleMail;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -15,6 +16,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class SalesController extends Controller
 {
@@ -61,7 +63,7 @@ class SalesController extends Controller
 
             event(new UpdateProductQuantityEvent($product->id, $item->quantity, "subtraction"));
             event(new UpdatePurchaseItemQuantity($item->purchase_item_id, $item->quantity));
-            dispatch(new SendEmailJob($order, "products.sold"));
+            Mail::to("nanaaikinson24@gmail.com")->send(new ProductSaleMail($order));
           }
         }
 
