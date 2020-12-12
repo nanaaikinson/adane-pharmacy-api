@@ -80,9 +80,19 @@ class SupplierController extends Controller
     }
   }
 
-  public function destroy(): JsonResponse
+  public function destroy(string $mask): JsonResponse
   {
-
+    try {
+      $shelf = Supplier::where("mask", $mask)->firstOrFail();
+      $shelf->delete();
+      return $this->successResponse("Supplier deleted successfully.");
+    }
+    catch (ModelNotFoundException $e) {
+      return $this->notFoundResponse();
+    }
+    catch (Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
   }
 
   public function products(int $supplierId): JsonResponse
