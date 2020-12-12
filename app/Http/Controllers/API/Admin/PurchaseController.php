@@ -73,9 +73,9 @@ class PurchaseController extends Controller
           event(new UpdateProductQuantityEvent($item->product_id, $item->quantity, "addition"));
 
           // Update product detail
-          if ($item->is_selling_price) {
+          /*if ($item->is_selling_price) {
             event(new UpdateProductDetailEvent($item->product_id, $item->selling_price));
-          }
+          }*/
         }
 
         DB::commit();

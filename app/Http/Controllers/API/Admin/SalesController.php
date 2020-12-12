@@ -6,6 +6,7 @@ use App\Events\UpdateProductQuantityEvent;
 use App\Events\UpdatePurchaseItemQuantity;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrderRequest;
+use App\Jobs\SendEmailJob;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -54,8 +55,13 @@ class SalesController extends Controller
           ]);
 
           if ($orderItem) {
+            $order->setAttribute("customer", $order->customer);
+            $order->setAttribute("user", $order->user);
+            $order->setAttribute("items", $order->items);
+
             event(new UpdateProductQuantityEvent($product->id, $item->quantity, "subtraction"));
             event(new UpdatePurchaseItemQuantity($item->purchase_item_id, $item->quantity));
+            dispatch(new SendEmailJob($order, "products.sold"));
           }
         }
 
