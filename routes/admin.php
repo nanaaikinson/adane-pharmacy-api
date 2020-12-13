@@ -59,8 +59,9 @@ Route::middleware('json.response')->group(function () {
     // Orders
     Route::prefix("orders")->group(function () {
       Route::middleware("permission:point-of-sale,guard:admin")->group(function () {
-        Route::get("/", [SalesController::class, "index"]);
         Route::post("/buy", [SalesController::class, "order"]);
+        Route::get("/", [SalesController::class, "index"]);
+        Route::get("/{id}", [SalesController::class, "show"]);
       });
     });
 
