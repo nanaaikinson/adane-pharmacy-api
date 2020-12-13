@@ -7,7 +7,6 @@ use App\Events\UpdatePurchaseItemQuantity;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrderRequest;
 use App\Jobs\SendEmailJob;
-use App\Mail\ProductSaleMail;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -16,20 +15,51 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 
 class SalesController extends Controller
 {
   use ResponseTrait;
 
-  public function index(Request $request)
+  public function index(Request $request): JsonResponse
   {
     try {
+      $orders = Order::with(["items", "user", "customer"])->orderBy("id", "DESC")->get()->map(function ($order) {
+        $quantity = 0;
+        $totalPrice = 0;
 
+        foreach ($order->items as $i ) {
+          $totalPrice += (int)$i->quantity * $i->price;
+          $quantity += (int)$i->quantity;
+        }
+
+        $agent = $order->user ? "{$order->user->first_name} {$order->user->last_name}" : "Unknown";
+        $customer = $order->customer ? "{$order->customer->first_name} {$order->customer->last_name}" : "Unknown";
+
+        return [
+          "id" => $order->id,
+          "quantity" => (int)$quantity,
+          "total_price" => $totalPrice,
+          "sales_agent" => $agent,
+          "created_at" => $order->created_at,
+          "customer" => $customer
+        ];
+      });
+      return $this->dataResponse($orders);
     }
     catch (Exception $e) {
-
+      return $this->errorResponse($e->getMessage());
     }
+  }
+
+  public function show(int $id): JsonResponse
+  {
+    $order = Order::with(["items", "customer", "user"])->findOrFail($id);
+    $products = $order->items->map(function ($i) {
+      return $i->product;
+    });
+
+    $order->setAttribute("products", $products);
+    return $this->dataResponse($order);
   }
 
   public function order(StoreOrderRequest $request): JsonResponse
@@ -63,7 +93,7 @@ class SalesController extends Controller
 
             event(new UpdateProductQuantityEvent($product->id, $item->quantity, "subtraction"));
             event(new UpdatePurchaseItemQuantity($item->purchase_item_id, $item->quantity));
-            Mail::to("nanaaikinson24@gmail.com")->send(new ProductSaleMail($order));
+            dispatch(new SendEmailJob($order, "products.sold"));
           }
         }
 
