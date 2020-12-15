@@ -9,6 +9,7 @@ use App\Http\Controllers\API\Admin\ManufacturerController;
 use App\Http\Controllers\API\Admin\ProductController;
 use App\Http\Controllers\API\Admin\ProductTypeController;
 use App\Http\Controllers\API\Admin\PurchaseController;
+use App\Http\Controllers\API\Admin\ReportController;
 use App\Http\Controllers\API\Admin\RoleController;
 use App\Http\Controllers\API\Admin\SalesController;
 use App\Http\Controllers\API\Admin\ShelfController;
@@ -124,5 +125,6 @@ Route::middleware('json.response')->group(function () {
 
     // Dashboard
     Route::get("/dashboard", [DashboardController::class, "index"]);
+    Route::get("/month-report", [ReportController::class, "monthReport"]);
   });
 });
