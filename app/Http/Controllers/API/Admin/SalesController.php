@@ -95,7 +95,7 @@ class SalesController extends Controller
 
             event(new UpdateProductQuantityEvent($product->id, $item->quantity, "subtraction"));
             event(new UpdatePurchaseItemQuantity($item->purchase_item_id, $item->quantity));
-            dispatch(new SendEmailJob($order, "products.sold"));
+            // dispatch(new SendEmailJob($order, "products.sold"));
           }
         }
 
