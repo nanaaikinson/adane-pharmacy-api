@@ -10,6 +10,7 @@ use App\Jobs\SendEmailJob;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\PurchaseItem;
 use App\Traits\ResponseTrait;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -77,9 +78,10 @@ class SalesController extends Controller
         foreach ($validated->basket as $item) {
           $item = (object)$item;
           $product = Product::findOrFail($item->product_id);
+          $purchaseItem = PurchaseItem::findOrFail($item->purchase_item_id);
           $orderItem = OrderItem::create([
             "product_id" => $product->id,
-            "price" => $product->selling_price,
+            "price" => (int)$item->quantity * (int)$purchaseItem->selling_price,
             "quantity" => $item->quantity,
             "purchase_item_id" => $item->purchase_item_id,
             "order_id" => $order->id,

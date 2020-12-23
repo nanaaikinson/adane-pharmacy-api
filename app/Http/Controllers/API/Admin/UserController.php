@@ -11,6 +11,7 @@ use App\Traits\ResponseTrait;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Psy\Util\Json;
 
 class UserController extends Controller
@@ -105,6 +106,19 @@ class UserController extends Controller
         return $this->successDataResponse($user, "User updated successfully");
       }
       return $this->errorResponse("An error occurred while updating this user");
+    }
+    catch (Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
+  }
+
+  public function passwordUpdate(Request $request, string $mask): JsonResponse
+  {
+    try {
+
+    }
+    catch (ModelNotFoundException $e) {
+      return $this->notFoundResponse();
     }
     catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
