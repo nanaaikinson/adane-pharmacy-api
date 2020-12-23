@@ -81,7 +81,7 @@ class SalesController extends Controller
           $purchaseItem = PurchaseItem::findOrFail($item->purchase_item_id);
           $orderItem = OrderItem::create([
             "product_id" => $product->id,
-            "price" => $purchaseItem->selling_price,
+            "price" => (int)$item->quantity * (int)$purchaseItem->selling_price,
             "quantity" => $item->quantity,
             "purchase_item_id" => $item->purchase_item_id,
             "order_id" => $order->id,
