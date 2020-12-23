@@ -115,7 +115,7 @@ class UserController extends Controller
   public function passwordUpdate(Request $request, string $mask): JsonResponse
   {
     try {
-      
+
     }
     catch (ModelNotFoundException $e) {
       return $this->notFoundResponse();
