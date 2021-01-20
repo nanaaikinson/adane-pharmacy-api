@@ -4,6 +4,7 @@ use App\Http\Controllers\API\Admin\AuthController;
 use App\Http\Controllers\API\Admin\CategoryController;
 use App\Http\Controllers\API\Admin\CustomerController;
 use App\Http\Controllers\API\Admin\DashboardController;
+use App\Http\Controllers\API\Admin\ExpenseController;
 use App\Http\Controllers\API\Admin\FileController;
 use App\Http\Controllers\API\Admin\ManufacturerController;
 use App\Http\Controllers\API\Admin\ProductController;
@@ -75,6 +76,7 @@ Route::middleware('json.response')->group(function () {
 
       Route::apiResource("shelves", ShelfController::class);
       Route::apiResource("product-types", ProductTypeController::class);
+      Route::apiResource("expenses", ExpenseController::class);
     });
 
     // Products
