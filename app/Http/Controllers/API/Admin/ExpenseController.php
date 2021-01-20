@@ -30,7 +30,7 @@ class ExpenseController extends Controller
         "mask" => Mask::integer()
       ]);
 
-      return $this->successDataResponse("Expense created successfully.", $expense);
+      return $this->successDataResponse($expense, "Expense created successfully.");
     }
     catch (\Exception $e) {
       return $this->errorResponse($e->getMessage());
@@ -61,7 +61,7 @@ class ExpenseController extends Controller
         "note" => $request->input("note"),
       ]);
 
-      return $this->successDataResponse("Expense updated successfully.", $expense);
+      return $this->successDataResponse($expense, "Expense updated successfully.");
     }
     catch (ModelNotFoundException $e) {
       return $this->notFoundResponse();
