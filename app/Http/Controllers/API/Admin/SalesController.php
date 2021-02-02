@@ -6,6 +6,7 @@ use App\Events\UpdateProductQuantityEvent;
 use App\Events\UpdatePurchaseItemQuantity;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrderRequest;
+use App\Jobs\ProductSingleReorderJob;
 use App\Jobs\SendEmailJob;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -95,6 +96,7 @@ class SalesController extends Controller
 
             event(new UpdateProductQuantityEvent($product->id, $item->quantity, "subtraction"));
             event(new UpdatePurchaseItemQuantity($item->purchase_item_id, $item->quantity));
+            dispatch(new ProductSingleReorderJob($product));
             // dispatch(new SendEmailJob($order, "products.sold"));
           }
         }
