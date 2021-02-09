@@ -35,8 +35,8 @@ class ProductMultipleReorderJob implements ShouldQueue
     $products = Product::where("quantity", "<=", "reorder_level")->get();
 
     if ($products->isNotEmpty()) {
-//      Mail::to("nanaaikinson24@gmail.com")
-//        ->send(new ProductMultipleReorderMail($products));
+      Mail::to("nanaaikinson24@gmail.com")
+        ->send(new ProductMultipleReorderMail($products));
 
       Mail::to("adanechemistltd@gmail.com")
         ->send(new ProductMultipleReorderMail($products));
