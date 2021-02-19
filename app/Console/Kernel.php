@@ -26,8 +26,10 @@ class Kernel extends ConsoleKernel
   protected function schedule(Schedule $schedule)
   {
     // $schedule->command('inspire')->hourly();
-     $schedule->command("adane:product-reorder-scheduler")->daily();
-     $schedule->command("adane:customer-deworming-scheduler")->daily();
+    $schedule->command("adane:product-reorder-scheduler")->daily();
+    $schedule->command("adane:customer-deworming-scheduler")->daily();
+    $schedule->command('backup:clean')->daily()->at('06:00');
+    $schedule->command('backup:run')->daily()->at('06:30');
   }
 
   /**
