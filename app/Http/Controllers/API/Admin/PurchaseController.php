@@ -144,32 +144,32 @@ class PurchaseController extends Controller
   }
 
 
-  public function update(StorePurchaseRequest $request, string $mask): JsonResponse
+  public function update(string $mask): JsonResponse
   {
     try {
       return $this->successResponse("Updated testing");
 
-      $purchase = Purchase::with("items")->where("mask", $mask)->firstOrFail();
-      $purchaseItems = $purchase->items;
-      $validated = (object)$request->validationData();
-
-      DB::beginTransaction();
-      $updatedPurchase = $purchase->update([
-        "supplier_id" => $validated->supplier,
-        "purchase_date" => $validated->purchase_date,
-        "invoice_number" => $validated->invoice_number,
-        "description" => $request->input("description") ?: NULL,
-      ]);
-
-      if ($updatedPurchase) {
-        dispatch(new PurchaseUpdateJob($purchaseItems, $purchase, $validated));
-
-        DB::commit();
-        return $this->successResponse("Purchase update will be queued for processing.");
-      } else {
-        DB::rollBack();
-        return $this->errorResponse("An error occurred while updating this purchase.");
-      }
+//      $purchase = Purchase::with("items")->where("mask", $mask)->firstOrFail();
+//      $purchaseItems = $purchase->items;
+//      $validated = (object)$request->validationData();
+//
+//      DB::beginTransaction();
+//      $updatedPurchase = $purchase->update([
+//        "supplier_id" => $validated->supplier,
+//        "purchase_date" => $validated->purchase_date,
+//        "invoice_number" => $validated->invoice_number,
+//        "description" => $request->input("description") ?: NULL,
+//      ]);
+//
+//      if ($updatedPurchase) {
+//        dispatch(new PurchaseUpdateJob($purchaseItems, $purchase, $validated));
+//
+//        DB::commit();
+//        return $this->successResponse("Purchase update will be queued for processing.");
+//      } else {
+//        DB::rollBack();
+//        return $this->errorResponse("An error occurred while updating this purchase.");
+//      }
     } catch (ModelNotFoundException $e) {
       return $this->notFoundResponse();
     } catch (Exception $e) {
