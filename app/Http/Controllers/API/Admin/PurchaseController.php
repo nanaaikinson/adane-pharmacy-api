@@ -141,7 +141,7 @@ class PurchaseController extends Controller
   }
 
 
-  public function update(string $mask): JsonResponse
+  public function update(StorePurchaseRequest $request, string $mask): JsonResponse
   {
     try {
 
