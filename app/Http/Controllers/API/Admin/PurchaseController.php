@@ -159,39 +159,42 @@ class PurchaseController extends Controller
       ]);
 
       if ($updatedPurchase) {
-        foreach ($validated->items as $item) {
-          $item = (object)$item;
+        $this->dispatch(function () use ($purchaseItems, $purchase, $validated) {
+          foreach ($validated->items as $item) {
+            $item = (object)$item;
 
-          PurchaseItem::create([
-            "purchase_id" => $purchase->id,
-            "product_id" => $item->product_id,
-            "expiry_date" => $item->has_expiry ? $item->expiry_date : NULL,
-            "cost_price" => $item->cost_price,
-            "selling_price" => $item->selling_price,
-            "quantity" => $item->quantity,
-          ]);
+            PurchaseItem::create([
+              "purchase_id" => $purchase->id,
+              "product_id" => $item->product_id,
+              "expiry_date" => $item->has_expiry ? $item->expiry_date : NULL,
+              "cost_price" => $item->cost_price,
+              "selling_price" => $item->selling_price,
+              "quantity" => $item->quantity,
+            ]);
 
-          // Update product quantity
-          event(new UpdateProductQuantityEvent($item->product_id, $item->quantity, "addition"));
+            // Update product quantity
+            event(new UpdateProductQuantityEvent($item->product_id, $item->quantity, "addition"));
 
-          // Update product detail
-          if ($item->is_selling_price) {
-            event(new UpdateProductDetailEvent($item->product_id, $item->selling_price));
+            // Update product detail
+            if ($item->is_selling_price) {
+              event(new UpdateProductDetailEvent($item->product_id, $item->selling_price));
+            }
           }
-        }
 
-        foreach ($purchaseItems as $item) {
-          $item->delete();
+          foreach ($purchaseItems as $item) {
+            $item->delete();
 
-          // Update product quantity
-          event(new UpdateProductQuantityEvent($item->product_id, $item->quantity, "subtraction"));
-        }
+            // Update product quantity
+            event(new UpdateProductQuantityEvent($item->product_id, $item->quantity, "subtraction"));
+          }
+        });
 
         DB::commit();
-        return $this->successResponse("Purchase updated successfully.");
+        return $this->successResponse("Purchase update will be queued for processing.");
+      } else {
+        DB::rollBack();
+        return $this->errorResponse("An error occurred while updating this purchase.");
       }
-      DB::rollBack();
-      return $this->errorResponse("An error occurred while updating this purchase.");
     } catch (ModelNotFoundException $e) {
       return $this->notFoundResponse();
     } catch (Exception $e) {
