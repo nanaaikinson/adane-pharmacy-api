@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\API\Admin;
 
-use App\Events\UpdateProductDetailEvent;
 use App\Events\UpdateProductQuantityEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePurchaseRequest;
@@ -10,13 +9,11 @@ use App\Jobs\PurchaseUpdateJob;
 use App\Models\Purchase;
 use App\Models\PurchaseItem;
 use App\Traits\ResponseTrait;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Knp\Snappy\Pdf;
 
 class PurchaseController extends Controller
 {
@@ -123,7 +120,7 @@ class PurchaseController extends Controller
         ->where("mask", $mask)
         ->firstOrFail();
 
-      $filename = "purchase-".time().".pdf";
+      $filename = "purchase-" . time() . ".pdf";
       $pdf = \PDF::loadView("pdf.purchase-detail", compact("purchase"));
       $pdf->setPaper('a4')->setOrientation('landscape')->setOption('margin-bottom', 0);
       $pdf->save(storage_path("app/public/") . $filename);
@@ -147,29 +144,28 @@ class PurchaseController extends Controller
   public function update(string $mask): JsonResponse
   {
     try {
-      return $this->successResponse("Updated testing");
 
-//      $purchase = Purchase::with("items")->where("mask", $mask)->firstOrFail();
-//      $purchaseItems = $purchase->items;
-//      $validated = (object)$request->validationData();
-//
-//      DB::beginTransaction();
-//      $updatedPurchase = $purchase->update([
-//        "supplier_id" => $validated->supplier,
-//        "purchase_date" => $validated->purchase_date,
-//        "invoice_number" => $validated->invoice_number,
-//        "description" => $request->input("description") ?: NULL,
-//      ]);
-//
-//      if ($updatedPurchase) {
-//        dispatch(new PurchaseUpdateJob($purchaseItems, $purchase, $validated));
-//
-//        DB::commit();
-//        return $this->successResponse("Purchase update will be queued for processing.");
-//      } else {
-//        DB::rollBack();
-//        return $this->errorResponse("An error occurred while updating this purchase.");
-//      }
+      $purchase = Purchase::with("items")->where("mask", $mask)->firstOrFail();
+      $purchaseItems = $purchase->items;
+      $validated = (object)$request->validationData();
+
+      DB::beginTransaction();
+      $updatedPurchase = $purchase->update([
+        "supplier_id" => $validated->supplier,
+        "purchase_date" => $validated->purchase_date,
+        "invoice_number" => $validated->invoice_number,
+        "description" => $request->input("description") ?: NULL,
+      ]);
+
+      if ($updatedPurchase) {
+        dispatch(new PurchaseUpdateJob($purchaseItems, $purchase, $validated));
+
+        DB::commit();
+        return $this->successResponse("Purchase update will be queued for processing.");
+      } else {
+        DB::rollBack();
+        return $this->errorResponse("An error occurred while updating this purchase.");
+      }
     } catch (ModelNotFoundException $e) {
       return $this->notFoundResponse();
     } catch (Exception $e) {
@@ -193,11 +189,9 @@ class PurchaseController extends Controller
       }
       DB::rollBack();
       return $this->errorResponse("An error occurred while deleting this purchase");
-    }
-    catch (ModelNotFoundException $e) {
+    } catch (ModelNotFoundException $e) {
       return $this->notFoundResponse();
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
       DB::rollBack();
       return $this->errorResponse($e->getMessage());
     }
