@@ -147,6 +147,8 @@ class PurchaseController extends Controller
   public function update(StorePurchaseRequest $request, string $mask): JsonResponse
   {
     try {
+      return $this->successResponse("Updated testing");
+
       $purchase = Purchase::with("items")->where("mask", $mask)->firstOrFail();
       $purchaseItems = $purchase->items;
       $validated = (object)$request->validationData();
