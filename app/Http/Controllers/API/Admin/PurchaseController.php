@@ -6,6 +6,7 @@ use App\Events\UpdateProductDetailEvent;
 use App\Events\UpdateProductQuantityEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePurchaseRequest;
+use App\Jobs\PurchaseUpdateJob;
 use App\Models\Purchase;
 use App\Models\PurchaseItem;
 use App\Traits\ResponseTrait;
@@ -159,35 +160,7 @@ class PurchaseController extends Controller
       ]);
 
       if ($updatedPurchase) {
-        $this->dispatch(function () use ($purchaseItems, $purchase, $validated) {
-          foreach ($validated->items as $item) {
-            $item = (object)$item;
-
-            PurchaseItem::create([
-              "purchase_id" => $purchase->id,
-              "product_id" => $item->product_id,
-              "expiry_date" => $item->has_expiry ? $item->expiry_date : NULL,
-              "cost_price" => $item->cost_price,
-              "selling_price" => $item->selling_price,
-              "quantity" => $item->quantity,
-            ]);
-
-            // Update product quantity
-            event(new UpdateProductQuantityEvent($item->product_id, $item->quantity, "addition"));
-
-            // Update product detail
-            if ($item->is_selling_price) {
-              event(new UpdateProductDetailEvent($item->product_id, $item->selling_price));
-            }
-          }
-
-          foreach ($purchaseItems as $item) {
-            $item->delete();
-
-            // Update product quantity
-            event(new UpdateProductQuantityEvent($item->product_id, $item->quantity, "subtraction"));
-          }
-        });
+        dispatch(new PurchaseUpdateJob($purchaseItems, $purchase, $validated));
 
         DB::commit();
         return $this->successResponse("Purchase update will be queued for processing.");
