@@ -10,6 +10,7 @@ use App\Traits\ResponseTrait;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Exception;
+use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
@@ -94,6 +95,16 @@ class CustomerController extends Controller
       return $this->notFoundResponse();
     }
     catch (Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
+  }
+
+  public function destroyMultipleUsingId(Request $request): JsonResponse
+  {
+    try {
+      Customer::query()->whereIn("id", $request->input("customers"))->delete();
+      return $this->successResponse("Selected customers deleted successfully.");
+    } catch (\Exception $e) {
       return $this->errorResponse($e->getMessage());
     }
   }

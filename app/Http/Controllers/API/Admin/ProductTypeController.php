@@ -84,4 +84,14 @@ class ProductTypeController extends Controller
       return $this->errorResponse($e->getMessage());
     }
   }
+
+  public function destroyMultipleUsingId(Request $request): JsonResponse
+  {
+    try {
+      ProductType::query()->whereIn("id", $request->input("product-types"))->delete();
+      return $this->successResponse("Selected product types deleted successfully.");
+    } catch (\Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
+  }
 }

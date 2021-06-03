@@ -86,4 +86,14 @@ class ExpenseController extends Controller
       return $this->errorResponse($e->getMessage());
     }
   }
+
+  public function destroyMultipleUsingId(Request $request): JsonResponse
+  {
+    try {
+      Expense::query()->whereIn("id", $request->input("expenses"))->delete();
+      return $this->successResponse("Selected expenses deleted successfully.");
+    } catch (\Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
+  }
 }

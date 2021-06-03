@@ -89,4 +89,14 @@ class ManufacturerController extends Controller
       return $this->errorResponse($e->getMessage());
     }
   }
+
+  public function destroyMultipleUsingId(Request $request): JsonResponse
+  {
+    try {
+      Manufacturer::query()->whereIn("id", $request->input("manufacturers"))->delete();
+      return $this->successResponse("Selected manufacturers deleted successfully.");
+    } catch (\Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
+  }
 }

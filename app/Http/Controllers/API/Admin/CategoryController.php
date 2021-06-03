@@ -85,4 +85,13 @@ class CategoryController extends Controller
     }
   }
 
+  public function destroyMultipleUsingId(Request $request): JsonResponse
+  {
+    try {
+      Category::query()->whereIn("id", $request->input("categories"))->delete();
+      return $this->successResponse("Selected categories deleted successfully.");
+    } catch (\Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
+  }
 }

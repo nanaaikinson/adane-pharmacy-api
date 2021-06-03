@@ -86,11 +86,9 @@ class SupplierController extends Controller
       $shelf = Supplier::where("mask", $mask)->firstOrFail();
       $shelf->delete();
       return $this->successResponse("Supplier deleted successfully.");
-    }
-    catch (ModelNotFoundException $e) {
+    } catch (ModelNotFoundException $e) {
       return $this->notFoundResponse();
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
       return $this->errorResponse($e->getMessage());
     }
   }
@@ -100,11 +98,19 @@ class SupplierController extends Controller
     try {
       $supplier = Supplier::with("products")->findOrFail($supplierId);
       return $this->dataResponse($supplier);
-    }
-    catch (ModelNotFoundException $e) {
+    } catch (ModelNotFoundException $e) {
       return $this->notFoundResponse();
+    } catch (Exception $e) {
+      return $this->errorResponse($e->getMessage());
     }
-    catch (Exception $e) {
+  }
+
+  public function destroyMultipleUsingId(Request $request): JsonResponse
+  {
+    try {
+      Supplier::query()->whereIn("id", $request->input("suppliers"))->delete();
+      return $this->successResponse("Selected suppliers deleted successfully.");
+    } catch (\Exception $e) {
       return $this->errorResponse($e->getMessage());
     }
   }

@@ -114,4 +114,14 @@ class ShelfController extends Controller
       return $this->errorResponse($e->getMessage());
     }
   }
+
+  public function destroyMultipleUsingId(Request $request): JsonResponse
+  {
+    try {
+      Shelf::query()->whereIn("id", $request->input("shelves"))->delete();
+      return $this->successResponse("Selected shelves deleted successfully.");
+    } catch (\Exception $e) {
+      return $this->errorResponse($e->getMessage());
+    }
+  }
 }

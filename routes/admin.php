@@ -29,6 +29,8 @@ Route::middleware('json.response')->group(function () {
   Route::middleware("auth:admin")->group(function () {
     // Customers
     Route::prefix("customers")->group(function () {
+      Route::delete("/delete-multiple", [CustomerController::class, "destroyMultipleUsingId"]);
+
       Route::get("/", [CustomerController::class, "index"])->middleware("permission:read-customer,guard:admin");
       Route::post("/", [CustomerController::class, "store"])->middleware("permission:create-customer,guard:admin");
       Route::get("/{mask}", [CustomerController::class, "show"])->middleware("permission:read-customer,guard:admin");
@@ -65,13 +67,22 @@ Route::middleware('json.response')->group(function () {
 
     // Settings
     Route::middleware("permission:settings,guard:admin")->group(function () {
+      Route::delete("/suppliers/delete-multiple", [SupplierController::class, "destroyMultipleUsingId"]);
       Route::apiResource("suppliers", SupplierController::class);
 
+      Route::delete("/categories/delete-multiple", [CategoryController::class, "destroyMultipleUsingId"]);
       Route::apiResource("categories", CategoryController::class);
+
+      Route::delete("/manufacturers/delete-multiple", [ManufacturerController::class, "destroyMultipleUsingId"]);
       Route::apiResource("manufacturers", ManufacturerController::class);
 
+      Route::delete("/shelves/delete-multiple", [ShelfController::class, "destroyMultipleUsingId"]);
       Route::apiResource("shelves", ShelfController::class);
+
+      Route::delete("/product-types/delete-multiple", [ProductTypeController::class, "destroyMultipleUsingId"]);
       Route::apiResource("product-types", ProductTypeController::class);
+
+      Route::delete("/expenses/delete-multiple", [ExpenseController::class, "destroyMultipleUsingId"]);
       Route::apiResource("expenses", ExpenseController::class);
     });
 
